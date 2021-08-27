@@ -6,12 +6,12 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClientStaff extends Model
+class CquoinUser extends Model
 {
     use HasFactory;
 
     /**
-     * get the client staff user account
+     * get the cquoin users user account
      */
     public function user()
     {

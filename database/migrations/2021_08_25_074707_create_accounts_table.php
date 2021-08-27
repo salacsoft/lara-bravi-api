@@ -13,15 +13,14 @@ class CreateAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accounts', function (Blueprint $table) {
+        Schema::create('cquoin_users', function (Blueprint $table) {
             $table->id();
+            $table->string("uuid")->nullable();
             $table->string("first_name")->nullable();
             $table->string("last_name")->nullable();
             $table->string("middle_name")->nullable();
             $table->string("photo")->nullable();
             $table->string("mobile_no")->nullable();
-            $table->string("accountable_uuid")->nullable();
-            $table->string("accountable_type")->nullable();
             $table->timestamps();
         });
     }
@@ -33,6 +32,6 @@ class CreateAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('cquoin_users');
     }
 }

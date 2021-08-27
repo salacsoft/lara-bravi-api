@@ -18,9 +18,12 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
+        'user_type',
+        'userable_type',
+        'userable_uuid'
     ];
 
     /**
@@ -41,4 +44,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * get the parent userable model of user
+     */
+    public function userable()
+    {
+        return $this->morphTo(__FUNCTION__, 'userable_type', 'userable_uuid');
+    }
+
+
+
 }
