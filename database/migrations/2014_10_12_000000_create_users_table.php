@@ -23,6 +23,9 @@ class CreateUsersTable extends Migration
             $table->string("userable_uuid")->nullable();
             $table->string("userable_type")->nullable();
             $table->string("user_type")->nullable();
+            $table->integer("attempt")->nullable()->default(0);
+            $table->datetime("banned_until")->nullable();
+            $table->json("device_info")->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
