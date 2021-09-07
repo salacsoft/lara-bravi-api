@@ -26,4 +26,9 @@ class BaseService
     {
         return $this->model->findOrFail($id);
     }
+
+    public function getBy($column, $value)
+    {
+        return $this->model->where($column, $value)->first();
+    }
 }

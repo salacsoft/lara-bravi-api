@@ -13,7 +13,6 @@ trait AuthTrait {
       $user  = $this->user->where("email", $email)->first();
       if($user){
          $user->update(["attempt" => $user->attempt += 1]);
-         Log::info("atttempt " . $user->attemtpt);
          if (config('bravi.max_login_attempt') <=  $user->attempt ) {
             $this->banUser($email);
          }

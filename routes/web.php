@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+
+Route::get("/email", function() {
+    return new ResetPasswordMail(["test" => "http://localhost:8080/forgot-password"]);
 });

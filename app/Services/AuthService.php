@@ -2,10 +2,15 @@
 
 namespace App\Services;
 
+use DB;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Traits\AuthTrait;
+use Illuminate\Support\Str;
+use App\Mail\ResetPasswordMail;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AuthService  extends BaseService
 {
@@ -32,19 +37,21 @@ class AuthService  extends BaseService
             );
         }
 
-        $userStatus = $this->checkUserStatus($request->email);
-        if ($userStatus["banned"]){
-            return array(
-                "success" => false,
-                "message" => "Sorry your account is temporarily blocked.<br> You may try again at ". $userStatus["until"]  ." <br> or call your system admin for assistance.",
-                "code" => 409
-            );
-        }
 
         $credentials = request(['email' , 'password']);
         if(!Auth::attempt($credentials, $request->remember)){
             $this->limiter->hit('loginAttempt');
             $this->failedAttempt($request->email);
+
+            $userStatus = $this->checkUserStatus($request->email);
+            if ($userStatus["banned"]){
+                return array(
+                    "success" => false,
+                    "message" => "Sorry your account is temporarily blocked. \n You may try again at ". $userStatus["until"] ." (current time ". Carbon::now()->format('Y-m-d h:i A') .") \n or call your system admin for assistance.",
+                    "code" => 409
+                );
+            }
+
             return array(
                 "success" => false,
                 "message" => "Incorrect Email or Password, Please check your credential and try again",
@@ -58,6 +65,48 @@ class AuthService  extends BaseService
             "message" => "User logged in",
             "code" => 200
         );
+    }
+
+
+    public function forgotPassword($request)
+    {
+        try {
+            return true;
+        }finally {
+            $token = Str::random(30);
+            $user = $this->getBy("email", $request->email);
+            DB::beginTransaction();
+
+            DB::table("password_resets")->upsert([
+                ["email" => $request->email, "token" => $token, "valid_until" => Carbon::now()->addMinutes(60)]
+            ], ["email" => $request->email]);
+
+            $data = array(
+                "token"     => $token,
+                "url"       => $request->url . "?token=".$token."&email=".$user->email,
+                "full_name" => $user->full_name,
+                "email"     => $user->email
+            );
+            Mail::to($user)->send(new ResetPasswordMail($data));
+            DB::commit();
+        }
+    }
+
+
+    public function resetPassword($request)
+    {
+        $pr = DB::table("password_resets")->where("email", $request->email)->where("token", $request->token)->first();
+        if ($pr) {
+            $now = Carbon::now();
+            $valid = $now->greaterThan($pr->valid_until);
+            if($valid) {
+                $user = $this->model->where("email", $pr->email)->first();
+                $user->update(["password" => $request->password]);
+                DB::table("password_resets")->where("email", $request->email)->delete();
+                return true;
+            }
+        }
+        return false;
     }
 
 }
