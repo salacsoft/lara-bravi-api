@@ -9,6 +9,7 @@ use App\Traits\AuthTrait;
 use Illuminate\Support\Str;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Cache\RateLimiter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -70,43 +71,51 @@ class AuthService  extends BaseService
 
     public function forgotPassword($request)
     {
-        try {
-            return true;
-        }finally {
-            $token = Str::random(30);
-            $user = $this->getBy("email", $request->email);
-            DB::beginTransaction();
 
-            DB::table("password_resets")->upsert([
-                ["email" => $request->email, "token" => $token, "valid_until" => Carbon::now()->addMinutes(60)]
-            ], ["email" => $request->email]);
+        $token = Str::random(30);
+        $user = $this->getBy("email", $request->email);
+        DB::table("password_resets")->where("email", $request->email)->delete();
+        DB::beginTransaction();
 
-            $data = array(
-                "token"     => $token,
-                "url"       => $request->url . "?token=".$token."&email=".$user->email,
-                "full_name" => $user->full_name,
-                "email"     => $user->email
-            );
-            Mail::to($user)->send(new ResetPasswordMail($data));
-            DB::commit();
-        }
+        DB::table("password_resets")->upsert([
+            ["email" => $request->email, "token" => $token, "valid_until" => Carbon::now()->addMinutes(60)]
+        ], ["email" => $request->email]);
+
+        $data = array(
+            "token"     => $token,
+            "url"       => $request->url . "?token=".$token."&email=".$user->email,
+            "full_name" => $user->full_name,
+            "email"     => $user->email
+        );
+        Mail::to($user)->send(new ResetPasswordMail($data));
+        DB::commit();
+
     }
 
 
     public function resetPassword($request)
     {
+        $status = false;
+        $msg =  "Invalid Token - Please try to request new reset link ";
         $pr = DB::table("password_resets")->where("email", $request->email)->where("token", $request->token)->first();
-        if ($pr) {
+        if ((bool)$pr) {
             $now = Carbon::now();
-            $valid = $now->greaterThan($pr->valid_until);
+            $valid = $now->lessThan($pr->valid_until);
             if($valid) {
                 $user = $this->model->where("email", $pr->email)->first();
                 $user->update(["password" => $request->password]);
-                DB::table("password_resets")->where("email", $request->email)->delete();
-                return true;
+                DB::table("password_resets")->where("email", $pr->email)->delete();
+                $status = true;
+                $msg =  "Password successfully updated - you can try to login now." ;
+            } else {
+                $msg =  "Token Expired - please try to request new reset link ";
             }
         }
-        return false;
+
+        return array(
+            "message" => $msg,
+            "success" => $status
+        );
     }
 
 }

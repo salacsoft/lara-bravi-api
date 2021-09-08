@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Traits\ResponseTrait;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\LoginResource;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\ForgotPasswordRequest;
@@ -52,9 +54,11 @@ class AuthController extends Controller
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        if (!$this->auth->resetPassword($request)) {
+        $response = $this->auth->resetPassword($request);
+        Log::info($response);
+        if (!$response["success"]) {
             return response()->json([
-                "message" => "Something went wrong - please ask your system administrator to check the issue"
+                "message" => $response["message"]
             ], 400);
         }
 
@@ -62,5 +66,10 @@ class AuthController extends Controller
             "message" => "Password Succesfully changed, you can login now"
         ], 200);
 
+    }
+
+    public function logOut(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
     }
 }

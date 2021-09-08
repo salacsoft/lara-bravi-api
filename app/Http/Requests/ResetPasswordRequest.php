@@ -27,7 +27,7 @@ class ResetPasswordRequest extends FormRequest
             "email" => "required|exists:password_resets,email",
             "token" => "required|exists:password_resets,token",
             "password" => "required|same:confirm_password|min:4|max:30",
-            "confirm_password" => "required|same:password|min:4|max:30"
+            "confirm_password" => "required|min:4|max:30"
         ];
     }
 
@@ -38,10 +38,10 @@ class ResetPasswordRequest extends FormRequest
             "email.required" => "Bad request, email does not exists on your request",
             "email.exists"   => "Bad request, Invalid email address",
             "token.required" => "Bad request, Token  does not exists on your request",
-            "email.exists"   => "Bad request, Token Expired / Invalid please do not modify the token on your URL",
-            "password.required" => "Bad request, Password does not exists on your request",
+            "email.exists"   => "Bad request, Token Expired / Invalid please do not modify the token or email on your URL",
+            "password.required" => "Bad request, Please include Password on your payload",
             "password.same"     => "Bad request, Password and confirm password  does not mactch",
-            "confirm_password.required" => "Bad request, Confirm password does not exists on your request"
+            "confirm_password.required" => "Bad request, Confirm Please include Confirm Password on your payload"
         ];
     }
 }
