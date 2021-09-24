@@ -28,7 +28,7 @@ class AuthController extends Controller
         $auth = $this->auth->authenticate($request);
 
         if(!$auth["success"]) {
-            return $this->failure($auth["message"], $auth["code"]);
+            return $this->fail($auth["message"], $auth["code"]);
         }
         //delete all previous token
         $request->user()->tokens()->delete();
