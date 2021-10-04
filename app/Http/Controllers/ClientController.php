@@ -30,14 +30,51 @@ class ClientController extends Controller
      */
     public function all(Request $request)
     {
+        $pagination = $request->paginate ?? 1000;
+        if ($request->paginate == "all") {
+            $pagination = 10000;
+        }
+
+
+        if($request->search) {
+            $list = $this->clientService->lookFor([
+                "search" => $request->search,
+                "paginate" => $pagination ?? 5,
+                "sortBy" => $request->orderBy ?? "client_name"
+            ]);
+        }else {
+            $list = $this->clientService->getAll($request->paginate ?? 10000);
+        }
+
+        return ClientResource::collection($list);
+    }
+
+    /**
+     * Display a listing of client with datatable.
+     *
+     * @return Datatable
+     */
+    public function clientDataTables(Request $request)
+    {
         $list = $this->clientService->getAll($request->paginate ?? 0);
-        return  ClientResource::collection($list);
+        $clientResource =   ClientResource::collection($list);
+        return Datatables::of($clientResource)->make(true);
     }
 
 
+    public function search(Request $request)
+    {
+        $list = $this->clientService->lookFor([
+            "search" => $request->search,
+            "paginate" => $request->paginate ?? 5,
+            "sortBy" => $request->orderBy ?? "client_name"
+        ]);
+        return ClientResource::collection($list);
+    }
+
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage.s
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response

@@ -34,6 +34,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
 
     // clients
     Route::get("clients", [ClientController::class, "all"])->name("client.list");
+    Route::get("clients-search", [ClientController::class, "search"])->name("client.search");
     Route::get("clients/{id}", [ClientController::class, "get"])->name("client.get");
     Route::post("clients", [ClientController::class, "store"])->name("client.store");
     Route::patch("clients/{id}", [ClientController::class, "update"])->name("client.update");

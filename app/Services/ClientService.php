@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Client;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class ClientService  extends BaseService
 {
@@ -15,6 +16,10 @@ class ClientService  extends BaseService
     {
         parent::__construct($model);
         $this->client = $this->model;
+        $this->searchableColumns = ["uuid", "client_code", "client_name", "client_address"];
+        $this->defaultSortKey = "client_name";
     }
+
+
 
 }

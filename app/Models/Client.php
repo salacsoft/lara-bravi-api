@@ -17,4 +17,6 @@ class Client extends Model
         "client_address",
         "is_active"
     ];
+
+    public $defaultSortKey = "client_name";
 }

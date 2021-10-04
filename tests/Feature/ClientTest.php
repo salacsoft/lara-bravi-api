@@ -71,7 +71,7 @@ class ClientTest extends TestCase
             'Accept' => 'application/json',
             ])
             ->post(route('client.store'), $payload)
-            ->assertStatus(422);
+            ->assertStatus(200);
     }
 
     /**
