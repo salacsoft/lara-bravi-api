@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CquoinController;
+use App\Http\Controllers\BranchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
     Route::post("clients", [ClientController::class, "store"])->name("client.store");
     Route::patch("clients/{id}", [ClientController::class, "update"])->name("client.update");
     Route::delete("clients/{id}", [ClientController::class, "destroy"])->name("client.destroy");
-});
 
+		// branches
+		Route::post("branches",[BranchController::class,"store"])->name("branch.store");
+		Route::get("branches",[BranchController::class,"all"])->name("branch.list");
+	});
+	
 
 
