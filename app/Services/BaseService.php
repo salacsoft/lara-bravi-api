@@ -127,7 +127,6 @@ class BaseService
         $validated = $request->validate($this->requestValidator->rules($id));
         $columns = $this->model->getFillable();
         $payload = $request->only($columns);
-
         $record = $this->find($id);
         return $record->update($payload);
     }
