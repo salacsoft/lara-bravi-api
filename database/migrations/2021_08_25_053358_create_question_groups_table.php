@@ -18,6 +18,7 @@ class CreateQuestionGroupsTable extends Migration
             $table->string("uuid")->nullable();
             $table->string("group_name")->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

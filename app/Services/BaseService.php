@@ -11,11 +11,15 @@ class BaseService
     protected $model ;
     protected $searchableColumns = [];
     public $defaultSortKey = "id";
+    protected $fileStoragePath = "public";
+    public $requestValidator ;
+
     public function __construct($model)
     {
         $this->model = $model;
         $this->tableName = $this->model->getTable();
         $this->defaultSortKey = $this->model->defaultSortKey;
+        $this->searchableColumns = $this->model->searchableColumns;
     }
 
     public function getTable()
@@ -23,12 +27,16 @@ class BaseService
         return $tableName;
     }
 
-    public function getAll($pagination = 0)
+
+    public function getAll($request)
     {
-        if ($pagination != "all" && intval($pagination) > 0)
-            return $this->model->orderBy($this->defaultSortKey, "asc")->paginate($pagination);
-        else
-        return $this->model->orderBy($this->defaultSortKey, "asc")->paginate(1000000);
+        $paginate = $request->paginate ?? 1000000;
+        $orderBy = $request->orderBy ?? $this->model->defaultSortKey;
+        $query = $this->model;
+        if($request->search){
+            $query->whereLike($this->model->searchableColumns, $request->search);
+        }
+        return $query->orderBy($orderBy, "asc")->paginate($paginate);
     }
 
     public function getFillable()
@@ -53,11 +61,52 @@ class BaseService
     }
 
 
-    public function create($attributes)
+    public function create($request)
     {
-        return $this->model->create($attributes);
+        $validated = $request->validate($this->requestValidator->rules());
+        $columns = $this->model->getFillable();
+        $payload = $request->only($columns);
+        if (in_array("uuid", $columns )) {
+            $payload["uuid"] = Str::uuid(30);
+        }
+        return $this->model->create($payload);
     }
 
+
+    public function store($request)
+    {
+
+        $uuid = Str::uuid(30);
+        $columns = $this->model->getFillable();
+        $fileColumns = $this->model->fileColumns;
+
+        foreach($columns as $column) {
+            if ($fileColumns && in_array($column, $fileColumns)) {
+                $this->model[$column] = $this->storeFile($request, $column, $uuid);
+            }else {
+                $this->model[$column] = $request[$column] ?? null;
+            }
+
+        }
+        if (in_array("uuid", $columns )) {
+            $this->model["uuid"] = $uuid;
+        }
+
+        $this->model->save();
+        return array("success" => true, "data" => $this->model);
+    }
+
+
+    public function storeFile($request, $columnName, $filename): string
+    {
+        if ($request->hasFile($columnName)) {
+            $file = $request->file($columnName);
+            $name = $filename.$request->file($columnName)->getClientOriginalExtension();
+            return $request->file($columnName)->store($this->fileStoragePath);
+        }
+
+        return null;
+    }
 
     public function update($attributes, $id)
     {
@@ -78,7 +127,6 @@ class BaseService
             ->orderBy($criteria["sortBy"] ?? $this->defaultSortKey, "asc")
             ->paginate($criteria["paginate"]);
     }
-
 
 
 }

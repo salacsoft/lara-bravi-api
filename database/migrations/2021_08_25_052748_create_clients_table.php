@@ -22,6 +22,7 @@ class CreateClientsTable extends Migration
             $table->text("client_address")->nullable();
             $table->boolean("is_active")->default(1)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

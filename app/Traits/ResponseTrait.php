@@ -14,7 +14,7 @@ trait ResponseTrait
     }
 
 
-    protected function fail($message = null, $status = 422, $errors= [])
+    protected function fail($message = null, $status = 500, $errors= [])
     {
         return response()->json([
             "success" => false,

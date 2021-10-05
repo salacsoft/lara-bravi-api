@@ -44,7 +44,7 @@ class ClientTest extends TestCase
             ->assertStatus(201)
             ->assertJson(fn (AssertableJson $json) =>
                     $json->has('data')
-                        ->has("message")
+                        ->has("success")
                         ->etc()
             );
     }
@@ -71,7 +71,7 @@ class ClientTest extends TestCase
             'Accept' => 'application/json',
             ])
             ->post(route('client.store'), $payload)
-            ->assertStatus(200);
+            ->assertStatus(422);
     }
 
     /**
@@ -128,7 +128,6 @@ class ClientTest extends TestCase
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) =>
                 $json->has('data')
-                    ->has("meta")
                     ->has("links")
                     ->etc()
             );
@@ -153,13 +152,10 @@ class ClientTest extends TestCase
             ->get(route('client.get', ["id" => $client->id]))
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) =>
-                $json->etc()
-                    ->has("data", fn ($json) =>
-                        $json->where("id", $client->id)
-                            ->where("uuid", $client->uuid)
-                            ->has("id")
-                            ->etc()
-                )
+                $json->where("id", $client->id)
+                    ->where("uuid", $client->uuid)
+                    ->has("id")
+                    ->etc()
             );
     }
 

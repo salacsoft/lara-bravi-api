@@ -18,6 +18,7 @@ class CreateQuestionSubgroupsTable extends Migration
             $table->string("uuid")->nullable();
             $table->string("subgroup_name")->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

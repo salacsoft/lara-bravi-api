@@ -23,7 +23,7 @@ class ClientSeeder extends Seeder
     	foreach (range(1,200) as $index) {
             DB::table('clients')->insert([
                 'uuid' => Str::random(30),
-                'account_manager_uuid' => Str::random(30),
+                // 'account_manager_uuid' => Str::random(30),
                 'company_uuid' => Str::random(30),
                 'client_code' => Str::random(10),
                 'client_name' => $faker->name($gender),
