@@ -10,6 +10,7 @@ use App\Services\UserService;
 use App\Traits\ResponseTrait;
 use Illuminate\Support\Facades\DB;
 use App\Services\CquoinUserService;
+use Illuminate\Support\Facades\Log;
 use App\Notifications\WelcomeNewUser;
 use App\Http\Resources\CquoinResource;
 use App\Http\Requests\CquoinUserRequest;
@@ -25,6 +26,8 @@ class CquoinController extends Controller
     {
         $this->cquoin = $cquoin;
         $this->user = $user;
+        $this->modelService = $cquoin;
+        $this->modelAlias = " username ";
     }
 
 
@@ -32,7 +35,7 @@ class CquoinController extends Controller
      * @param App\Http\Requests\CquoinUserRequest;
      * @return App\Traits\ResponseTrait JSON
      */
-    public function store(CquoinUserRequest $request)
+    public function store(Request $request)
     {
         DB::beginTransaction();
         try {

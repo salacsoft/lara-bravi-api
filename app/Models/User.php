@@ -39,6 +39,22 @@ class User extends Authenticatable
         'remember_token'
     ];
 
+    public $searchableColumns = [
+        "uuid",
+        'username',
+        'email',
+        'password',
+        'user_type',
+        'userable_type',
+        'userable_uuid',
+        'banned_until',
+        'attempt',
+        'device_info',
+        'remember_token'
+    ];
+
+    public $defaultSortKey ="username";
+
     /**
      * The attributes that should be hidden for arrays.
      *
