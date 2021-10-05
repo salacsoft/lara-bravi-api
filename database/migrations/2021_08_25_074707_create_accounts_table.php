@@ -22,6 +22,7 @@ class CreateAccountsTable extends Migration
             $table->string("photo")->nullable();
             $table->string("mobile_no")->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

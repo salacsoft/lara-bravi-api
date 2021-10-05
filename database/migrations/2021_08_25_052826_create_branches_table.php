@@ -23,6 +23,7 @@ class CreateBranchesTable extends Migration
             $table->string("area_uuid")->nullable();
             $table->string("region_uuid")->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

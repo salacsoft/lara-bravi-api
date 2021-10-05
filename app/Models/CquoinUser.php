@@ -12,6 +12,9 @@ class CquoinUser extends Model
 
     protected $fillable = ["uuid", "last_name", "first_name", "middle_name", "mobile_no"];
 
+    public $searchableColumns = ["uuid", "last_name", "first_name", "middle_name", "mobile_no"];
+    public $defaultSortKey = "first_name";
+
     /**
      * get the cquoin users user account
      */

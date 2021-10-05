@@ -157,6 +157,15 @@ class UserAuthenticationTest extends TestCase
         ->post(route('user.login'), $credential)
         ->assertStatus(401);
 
+
+        // attempt to login
+        $this->withHeaders([
+            'Accept' => 'application/json',
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+            ])
+        ->post(route('user.login'), $credential)
+        ->assertStatus(401);
+
         // banned user
         $this->withHeaders([
             'Accept' => 'application/json',

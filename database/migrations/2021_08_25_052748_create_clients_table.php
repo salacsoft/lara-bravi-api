@@ -16,13 +16,13 @@ class CreateClientsTable extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string("uuid")->nullable();
-            $table->string("account_manager_uuid")->nullable();
             $table->string("company_uuid")->nullable();
             $table->string("client_code")->nullable();
             $table->string("client_name")->nullable();
             $table->text("client_address")->nullable();
             $table->boolean("is_active")->default(1)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

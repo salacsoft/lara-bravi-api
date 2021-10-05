@@ -20,6 +20,7 @@ class CreateSurveysTable extends Migration
             $table->text("survey_description")->nullable();
             $table->string("type")->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

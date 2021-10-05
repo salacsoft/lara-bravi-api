@@ -103,7 +103,7 @@ class AuthService  extends BaseService
             $valid = $now->lessThan($pr->valid_until);
             if($valid) {
                 $user = $this->model->where("email", $pr->email)->first();
-                $user->update(["password" => $request->password]);
+                $user->update(["password" => $request->password, "banned_until" => null, "attempt" => 0]);
                 DB::table("password_resets")->where("email", $pr->email)->delete();
                 $status = true;
                 $msg =  "Password successfully updated - you can try to login now." ;
