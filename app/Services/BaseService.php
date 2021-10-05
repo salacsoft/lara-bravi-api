@@ -132,6 +132,7 @@ class BaseService
         return $record->update($payload);
     }
 
+    //pass the id od the record to be delete
     public function delete($id)
     {
         $record = $this->find($id);
