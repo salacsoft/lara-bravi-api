@@ -122,6 +122,7 @@ class BaseService
         return null;
     }
 
+    //pass the request class and id of the record to update
     public function update($request, $id)
     {
         $validated = $request->validate($this->requestValidator->rules($id));
