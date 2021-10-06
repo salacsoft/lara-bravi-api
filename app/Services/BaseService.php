@@ -41,12 +41,17 @@ class BaseService
     {
         $paginate = $request->paginate ?? 1000000;
         $orderBy = $request->orderBy ?? $this->model->defaultSortKey;
-        $query = $this->model;
-        if($request->search){
-            $query->whereLike($this->model->searchableColumns, $request->search);
-        }
-        return $query->orderBy($orderBy, "asc")->paginate($paginate);
+        $lookUp = $request->search ?? "";
+        $result = $this->model
+                ->where(function($query) use ($lookUp) {
+                    $query->whereLike($this->model->searchableColumns, $lookUp);
+                })
+                ->orderBy($orderBy, "asc")
+                ->paginate($paginate);
+        return $result;
     }
+
+
 
     //get the fillable columns of the table
     public function getFillable()

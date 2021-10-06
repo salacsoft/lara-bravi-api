@@ -39,7 +39,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
     Route::post("clients", [ClientController::class, "store"])->name("client.store");
     Route::patch("clients/{id}", [ClientController::class, "update"])->name("client.update");
     Route::delete("clients/{id}", [ClientController::class, "destroy"])->name("client.destroy");
+    Route::post("clients/file/export", [ClientController::class, "exportList"])->name("client.export");
+
 });
+
+
 
 
 
