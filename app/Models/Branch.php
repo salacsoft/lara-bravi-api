@@ -18,4 +18,8 @@ class Branch extends Model
 			'area_uuid',
 			'region_uuid',
 		];
+
+		public $searchableColumns = ["uuid", "branch_code", "branch_name", "branch_address"];
+
+		public $defaultSortKey = "branch_name";
 }

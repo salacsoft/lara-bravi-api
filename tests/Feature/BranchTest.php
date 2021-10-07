@@ -26,6 +26,9 @@ class BranchTest extends TestCase
      */
     public function testCreateNewBranch()
     {
+			// important!:  using a faker must see a valid formatter in faker github 
+
+			// genarate a fake user to validate actions
 			$user = User::factory()->create();
 			$this->actingAs($user);
 
@@ -46,9 +49,31 @@ class BranchTest extends TestCase
 			->assertStatus(201)
 			->assertJson(fn (AssertableJson $json) => 
 				$json->has('data')
-							->has('message')
+							->has('success')
 							->etc()
 			);
 
     }
+
+		public function testGetBranchListingWithPagination()
+		{
+			Branch::factory()->count(3)->create();
+
+			// generate fake user
+			$user = User::factory()->create();
+			$this->actingAs($user);
+
+			// actions
+			$response = $this->withHeaders([
+				'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json'
+			])
+			->get(route('branch.list'))
+			->assertStatus(200)
+			->assertJson( fn (AssertableJson $json) => 
+				$json->has('data')
+						->has('links')
+						->etc()
+			);
+		}
 }

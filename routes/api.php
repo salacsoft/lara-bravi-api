@@ -40,17 +40,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
     Route::post("clients", [ClientController::class, "store"])->name("client.store");
     Route::patch("clients/{id}", [ClientController::class, "update"])->name("client.update");
     Route::delete("clients/{id}", [ClientController::class, "destroy"])->name("client.destroy");
-<<<<<<< HEAD
-=======
     Route::post("clients/file/export", [ClientController::class, "exportList"])->name("client.export");
 
-});
->>>>>>> develop
-
 		// branches
-		Route::post("branches",[BranchController::class,"store"])->name("branch.store");
-		Route::get("branches",[BranchController::class,"all"])->name("branch.list");
-	});
+		Route::post("branches", [BranchController::class, "store"])->name("branch.store");
+		Route::get("branches", [BranchController::class, "all"])->name("branch.list");
+
+});
 	
 
 
