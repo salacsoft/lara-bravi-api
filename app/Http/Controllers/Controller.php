@@ -44,7 +44,6 @@ class Controller extends BaseController
             return $response;
 
         } catch(\Exception $ex) {
-            Log::info($ex->getMessage());
             DB::rollback();
             return response()->json(["message" => $ex->getMessage()], 500);
         }
@@ -68,7 +67,6 @@ class Controller extends BaseController
                 return $response;
             }
         } catch(\Exception $ex) {
-            Log::info($ex->getMessage());
             Log::info($ex);
             DB::rollback();
             return response()->json(["message" => $ex->getMessage()], 500);
@@ -118,7 +116,6 @@ class Controller extends BaseController
             }
 
         } catch(\Exception $ex) {
-            Log::info($ex->getMessage());
             Log::info($ex);
             DB::rollback();
             return response()->json(["message" => $ex->getMessage()], 500);
@@ -144,7 +141,6 @@ class Controller extends BaseController
         }catch(ModelNotFoundException $ex) {
             return response()->json(["message" => "Record not Found!"], 404);
         }  catch(\Exception $ex) {
-            Log::info(get_class($ex));
             return response()->json(["message" => $ex->getMessage()], 500);
         }
     }
