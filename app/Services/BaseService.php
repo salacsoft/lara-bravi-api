@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BaseService
 {
@@ -92,9 +93,11 @@ class BaseService
     }
 
     //loop through the fillable columns and match on the payload to insert record on the table
-    public function store($request)
+    public function store($request, $id = null)
     {
-
+        if ($id !== null) {
+            $this->model = $this->find($id);
+        }
         $uuid = Str::uuid(30);
         $columns = $this->model->getFillable();
         $fileColumns = $this->model->fileColumns;
@@ -107,7 +110,7 @@ class BaseService
             }
 
         }
-        if (in_array("uuid", $columns )) {
+        if (in_array("uuid", $columns ) and $id == null) {
             $this->model["uuid"] = $uuid;
         }
 
@@ -127,21 +130,18 @@ class BaseService
         return null;
     }
 
-    //pass the request class and id of the record to update
-    public function update($request, $id)
-    {
-        $validated = $request->validate($this->requestValidator->rules($id));
-        $columns = $this->model->getFillable();
-        $payload = $request->only($columns);
-        $record = $this->find($id);
-        return $record->update($payload);
-    }
 
     //pass the id od the record to be delete
     public function delete($id)
     {
         $record = $this->find($id);
-        return $record->delete();
+         if($record){
+             $record->delete();
+             return array(
+                 "success" => true,
+                 "message" => "Record deleted"
+             );
+         }
     }
 
     public function lookFor($criteria)

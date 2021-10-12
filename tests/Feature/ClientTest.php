@@ -160,4 +160,45 @@ class ClientTest extends TestCase
     }
 
 
+    /**
+     * get client list
+     * @test
+     */
+    public function testUpdateClientRecord()
+    {
+        $client = Client::factory()->create();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        //actions
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->get(route('client.get', ["id" => $client->id]))
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) =>
+                $json->where("id", $client->id)
+                    ->where("uuid", $client->uuid)
+                    ->has("id")
+                    ->etc()
+            );
+
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->get(route('client.update', ["id" => $client->id]))
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) =>
+                $json->where("id", $client->id)
+                    ->where("uuid", $client->uuid)
+                    ->has("id")
+                    ->etc()
+            );
+
+
+    }
+
+
 }

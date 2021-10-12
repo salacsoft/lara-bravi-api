@@ -32,32 +32,9 @@ class ClientController extends Controller
 
     public function exportList(Request $request)
     {
-        // $responseHeaders = array(
-        //     // "Content-type" => "application/csv",
-        //     // "Content-Disposition" => "attachment; filename=test.pdf",
-        //     // "Pragma" => "no-cache",
-        //     // "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-        //     // 'Content-Transfer-Encoding' => 'binary',
-        //     // "Expires" => "0"
-        // );
-
-        // Excel::store(new ClientExport(2018), 'clien2.xlsx');
-        Log::info("payload-------------");
-        Log::info($request->selected);
-        Log::info("payload-------------");
-
-        Excel::store(new ClientExport($request->selected ?? []), 'invoices.xlsx', 'public');
-        $pathToFile = Storage::disk('public')->path('invoices.xlsx');
-        // Log::info("path ". $pathToFile);
-
+        Excel::store(new ClientExport($request->selected ?? []), 'clients.xlsx', 'public');
+        $pathToFile = Storage::disk('public')->path('clients.xlsx');
         return response()->download($pathToFile);
-
-        // $file = File::get($pathToFile);
-        // $response = Response::make($file, 200);
-        // $response->header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        // return $response;
-
-        // return Excel::store(new ClientExport, '/public/clients-list.xlsx',null, \Maatwebsite\Excel\Excel::CSV);
     }
 
 
