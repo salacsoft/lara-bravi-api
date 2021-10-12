@@ -166,6 +166,56 @@ class ClientTest extends TestCase
      */
     public function testUpdateClientRecord()
     {
+        $client =  Client::factory()->create();
+        $payload = array(
+            "id" => $client->id,
+            "uuid"   => "asdasd123123",
+            "client_code" => $client->client_code,
+            "client_name" => $client->client_name,
+            "client_address" => $client->client_address,
+        );
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        //actions
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->get(route('client.get', ["id" => $client->id]))
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) =>
+                $json->where("id", $client->id)
+                    ->where("uuid", $client->uuid)
+                    ->has("id")
+                    ->etc()
+            );
+
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->patch(route('client.update', ["id" => $payload["id"]]), $payload)
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) =>
+                $json->has("data")
+                    ->where("success",true)
+                    ->etc()
+                    ->has("data",fn (AssertableJSON $json2) =>
+                        $json2->where("id", $payload["id"])
+                        ->where("uuid", $payload["uuid"])
+                        ->has("id")
+                        ->etc()
+                    )
+            );
+    }
+
+    /**
+     * get client list
+     * @test
+     */
+    public function testUpdateClientRecordWithInvalidId()
+    {
         $client = Client::factory()->create();
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -188,16 +238,34 @@ class ClientTest extends TestCase
             'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
             'Accept' => 'application/json',
             ])
-            ->get(route('client.update', ["id" => $client->id]))
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) =>
-                $json->where("id", $client->id)
-                    ->where("uuid", $client->uuid)
-                    ->has("id")
-                    ->etc()
-            );
+            ->get(route('client.update', ["id" => 9156874]))
+            ->assertStatus(404);
+    }
 
 
+    // /**
+    //  * get client list
+    //  * @test
+    //  */
+    public function testUpdateClientRecordUsedClientCode()
+    {
+        $client =  Client::factory()->create();
+        $client2 =  Client::factory()->create();
+        $payload = array(
+            "id" => $client->id,
+            "client_code" => $client2->client_code,
+            "client_name" => $client->client_name,
+            "client_address" => $client->client_address,
+        );
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->patch(route('client.update', ["id" => $payload["id"]]), $payload)
+            ->assertStatus(422);
     }
 
 
