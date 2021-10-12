@@ -88,7 +88,6 @@ class Controller extends BaseController
         }catch(ModelNotFoundException $ex) {
             return response()->json(["message" => "Record not Found!"], 404);
         }  catch(\Exception $ex) {
-            Log::info(get_class($ex));
             return response()->json(["message" => $ex->getMessage()], 500);
         }
 
