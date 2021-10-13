@@ -32,9 +32,29 @@ class ClientController extends Controller
 
     public function exportList(Request $request)
     {
-        Excel::store(new ClientExport($request->selected ?? []), 'clients.xlsx', 'public');
-        $pathToFile = Storage::disk('public')->path('clients.xlsx');
-        return response()->download($pathToFile);
+        $exportType = array(
+            "excel" => \Maatwebsite\Excel\Excel::XLSX,
+            "csv"   => \Maatwebsite\Excel\Excel::CSV,
+            "pdf"   => \Maatwebsite\Excel\Excel::DOMPDF
+        );
+        $exportFile = array(
+            "excel" => "clients.xlsx",
+            "csv"   => "clients.csv",
+            "pdf"   => "clients.pdf",
+        );
+        // Excel::store(new ClientExport($request->selected ?? []), 'clients.xlsx', 'public');
+        // $pathToFile = Storage::disk('public')->path('clients.xlsx');
+        // return response()->download($pathToFile);
+        return (new ClientExport($request->selected ?? []))
+                        ->download(
+                            $exportFile[$request->exportType] ?? "clients.xlsx",
+                            $exportType[$request->exportType ?? "excel"]
+                        );
+    }
+
+    private function exportType($request)
+    {
+
     }
 
 
