@@ -44,6 +44,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
 		// branches
 		Route::post("branches", [BranchController::class, "store"])->name("branch.store");
 		Route::get("branches", [BranchController::class, "all"])->name("branch.list");
+		Route::get("branches/{id}", [BranchController::class, "get"])->name("branch.get");
+		Route::patch("branches/{id}", [BranchController::class, "update"])->name("branch.update");
 
 });
 

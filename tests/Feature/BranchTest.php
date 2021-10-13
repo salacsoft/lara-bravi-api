@@ -55,8 +55,7 @@ class BranchTest extends TestCase
 
     }
 
-		public function testGetBranchListingWithPagination()
-		{
+		public function testGetBranchListingWithPagination(){
 			Branch::factory()->count(3)->create();
 
 			// generate fake user
@@ -74,6 +73,69 @@ class BranchTest extends TestCase
 				$json->has('data')
 						->has('links')
 						->etc()
+			);
+		}
+
+		public function testUpdateBranch(){
+			// create a fake branch
+			$branch = Branch::factory()->create();
+
+			$user = User::factory()->create();
+			$this->actingAs($user);
+
+
+			// dummy data to update
+			$payload = array (
+				'id' => $branch->id,
+				'uuid' => $branch->uuid,
+				'client_uuid' => $branch->client_uuid,
+				'branch_code' => $branch->branch_code,
+				'branch_name' => $branch->branch_name,
+				'branch_address' => $branch->branch_address,
+			);
+
+			// action 1 verify branch if existing on database before proceed in 
+
+			$response = $this->withHeaders([
+				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json',
+			])
+			->get(route("branch.get", ["id" => $branch->id]))
+			->assertStatus(200)
+			->assertJson(fn (AssertableJson $json) => 
+				$json->where("id", $branch->id)
+							->where("uuid", $branch->uuid)
+							->where("client_uuid", $branch->client_uuid)
+							->has("id")
+							->etc()
+			);
+
+			// test scenario for error finding branch using id
+			$response = $this->withHeaders([
+				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json',
+			])
+			->get(route("branch.get", ["id" => 6]))
+			->assertStatus(404);
+
+			// action2
+			$response = $this->withHeaders([
+				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json',
+			])
+			// localhost:8000/api/v1/branches/{id}/data
+			->patch(route('branch.update',['id' => $payload['id']]), $payload)
+			->assertStatus(200)
+			->assertJson(fn (AssertableJson $json) => 
+				$json->has("data")
+							->where("success",true)
+							->etc()
+							->has("data", fn(AssertableJson $json2) => 
+							$json2->where("id", $payload["id"])
+										->where("uuid", $payload["uuid"])
+										->has("id")
+										->etc()
+							)
 			);
 		}
 }
