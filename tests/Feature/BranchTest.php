@@ -24,8 +24,8 @@ class BranchTest extends TestCase
      *
      * @return void
      */
-		// create branch
-    public function testCreateNewBranch(){
+		// BRANCH CREATE
+    public function testBranchCreation(){
 			// important!:  using a faker must see a valid formatter in faker github 
 
 			// genarate a fake user to validate actions
@@ -55,8 +55,8 @@ class BranchTest extends TestCase
 
     }
 
-		// test to create same branch code
-		public function testCheckDuplicateBranchCode(){
+		// CREATE SAME BRANCH_CODE
+		public function testBranchCheckDuplicateBranchCode(){
 			$user = User::factory()->create();
 			$this->actingAs($user);
 
@@ -68,20 +68,21 @@ class BranchTest extends TestCase
 			);
 
 			$response = $this->withHeaders([
-			'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest'
+				'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest'
 			])
 			->post(route('branch.store'), $payload)
 			->assertStatus(201);
 
 			$response = $this->withHeaders([
-			'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest'
+				'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json'
 			])
 			->post(route('branch.store'), $payload)
-			->assertStatus(302);
+			->assertStatus(422);
 		}
 
-		// list branch
-		public function testGetBranchListingWithPagination(){
+		// LIST ALL BRANCH WITH PAGINATION
+		public function testBranchListingWithPagination(){
 			Branch::factory()->count(3)->create();
 
 			// generate fake user
@@ -102,8 +103,30 @@ class BranchTest extends TestCase
 			);
 		}
 
-		// update branch
-		public function testUpdateBranch(){
+		// GET ONE RECORD TO BRANCH
+		public function testBranchGetOneRecord(){
+			$user = User::factory()->create();
+			$this->actingAs($user);
+
+			$branch = Branch::factory()->create();
+
+			$response = $this->withHeaders([
+				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json',
+			])
+			->get(route('branch.get',['id' => $branch->id]))
+			->assertStatus(200);
+
+			$response = $this->withHeaders([
+				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json',
+			])
+			->get(route('branch.get',['id' => 100]))
+			->assertStatus(404);
+		}
+
+		// BRANCH UPDATE
+		public function testUpdateBranchRecord(){
 			// create a fake branch
 			$branch = Branch::factory()->create();
 
@@ -166,8 +189,8 @@ class BranchTest extends TestCase
 			);
 		}
 
-		// delete branch 
-		public function testDeleteBranch(){
+		// BRANCH DELETE 
+		public function testDeleteBranchRecord(){
 			$branch = Branch::factory()->create();
 			$user = User::factory()->create();
 			$this->actingAs($user);
@@ -179,5 +202,12 @@ class BranchTest extends TestCase
 			])
 			->delete(route("branch.destroy", ["id" => $branch->id]))
 			->assertStatus(200);
+
+			$response = $this->withHeaders([
+				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json',
+			])
+			->get(route('branch.get',['id' => $branch->id]))
+			->assertStatus(404);
 		}
 }
