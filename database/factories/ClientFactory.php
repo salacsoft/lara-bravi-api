@@ -25,7 +25,7 @@ class ClientFactory extends Factory
         return [
             "uuid"  => Str::random(20),
             "client_code" => Str::random(10),
-            "client_name" => $this->faker->lastName,
+            "client_name" => $this->faker->name,
             "client_address" => $this->faker->address,
         ];
     }
