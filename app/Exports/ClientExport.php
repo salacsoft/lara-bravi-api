@@ -7,20 +7,15 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-
-class ClientExport implements FromQuery
+class ClientExport  extends DefaultValueBinder implements FromQuery, ShouldAutoSize, WithHeadings, WithCustomValueBinder
 {
-    // // use Exportable;
-    // /**
-    // * @return \Illuminate\Support\Collection
-    // */
-    // public function collection()
-    // {
-    //     return Client::all();
-    // }
 
     protected $ids = [];
 
@@ -28,20 +23,30 @@ class ClientExport implements FromQuery
 
     public function __construct(array $ids)
     {
-        Log::info("uid----------");
-        Log::info($ids);
-        Log::info("uid----------");
         $this->ids = $ids;
     }
 
     public function query()
     {
         if ($this->ids) {
-            return Client::whereIn("id", $this->ids)->orderBy("client_name", "asc");
+            return Client::query()->select("client_code", "client_name", "client_address")->whereIn("id", $this->ids)->orderBy("client_name", "asc");
         }
-        return Client::orderBy("client_name", "asc");
+        return Client::query()->select("client_code", "client_name", "client_address")->orderBy("client_name", "asc");
 
     }
+
+    public function bindValue(Cell $cell, $value)
+    {
+        $cell->setValueExplicit($value, DataType::TYPE_STRING);
+        return true;
+    }
+
+
+    public function headings(): array
+    {
+        return ["client code", "Client name", "client Address"];
+    }
+
 
 
 }

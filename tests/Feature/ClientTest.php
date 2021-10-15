@@ -243,10 +243,9 @@ class ClientTest extends TestCase
     }
 
 
-    // /**
-    //  * get client list
-    //  * @test
-    //  */
+    /**
+     * @test
+     */
     public function testUpdateClientRecordUsedClientCode()
     {
         $client =  Client::factory()->create();
@@ -266,6 +265,47 @@ class ClientTest extends TestCase
             ])
             ->patch(route('client.update', ["id" => $payload["id"]]), $payload)
             ->assertStatus(422);
+    }
+
+
+
+    public function testDeleteClient()
+    {
+        $client =  Client::factory()->create();
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->delete(route('client.delete', ["id" => $client->id]))
+            ->assertStatus(200);
+
+        //verify the the client has been deleted
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->get(route('client.get', ["id" => $client->id]))
+            ->assertStatus(404);
+
+
+    }
+
+
+
+    public function testDeleteNotExistingClient()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            ])
+            ->delete(route('client.delete', ["id" => 102125]))
+            ->assertStatus(404);
     }
 
 
