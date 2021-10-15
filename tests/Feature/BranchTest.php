@@ -24,8 +24,8 @@ class BranchTest extends TestCase
      *
      * @return void
      */
-    public function testCreateNewBranch()
-    {
+		// create branch
+    public function testCreateNewBranch(){
 			// important!:  using a faker must see a valid formatter in faker github 
 
 			// genarate a fake user to validate actions
@@ -55,6 +55,32 @@ class BranchTest extends TestCase
 
     }
 
+		// test to create same branch code
+		public function testCheckDuplicateBranchCode(){
+			$user = User::factory()->create();
+			$this->actingAs($user);
+
+			$payload = array(
+				'client_uuid' => Str::random(10),
+				'branch_code' => 'PSR1',
+				'branch_name' => 'Santa Rosa',
+				'branch_address' => 'Santa Rosa Nueva Ecija'
+			);
+
+			$response = $this->withHeaders([
+			'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest'
+			])
+			->post(route('branch.store'), $payload)
+			->assertStatus(201);
+
+			$response = $this->withHeaders([
+			'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest'
+			])
+			->post(route('branch.store'), $payload)
+			->assertStatus(302);
+		}
+
+		// list branch
 		public function testGetBranchListingWithPagination(){
 			Branch::factory()->count(3)->create();
 
@@ -76,6 +102,7 @@ class BranchTest extends TestCase
 			);
 		}
 
+		// update branch
 		public function testUpdateBranch(){
 			// create a fake branch
 			$branch = Branch::factory()->create();
@@ -115,7 +142,7 @@ class BranchTest extends TestCase
 				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
 				'Accept' => 'application/json',
 			])
-			->get(route("branch.get", ["id" => 6]))
+			->get(route("branch.get", ["id" => 1]))
 			->assertStatus(404);
 
 			// action2
@@ -137,5 +164,20 @@ class BranchTest extends TestCase
 										->etc()
 							)
 			);
+		}
+
+		// delete branch 
+		public function testDeleteBranch(){
+			$branch = Branch::factory()->create();
+			$user = User::factory()->create();
+			$this->actingAs($user);
+
+
+			$response = $this->withHeaders([
+				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+				'Accept' => 'application/json',
+			])
+			->delete(route("branch.destroy", ["id" => $branch->id]))
+			->assertStatus(200);
 		}
 }
