@@ -24,6 +24,7 @@ class BranchFactory extends Factory
     {
         return [
             'uuid' => Str::random(20),
+            'client_uuid' => Str::random(20),
 						'branch_code' => Str::random(10),
 						'branch_name' => $this->faker->streetName,
 						'branch_address' => $this->faker->address,

@@ -21,11 +21,11 @@ class BranchRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules($id = null)
     {
         return [
 					'client_uuid' => 'required',
-					'branch_code' => 'required|string|unique:branches,branch_code'.$this->id,
+					'branch_code' => 'required|string|unique:branches,branch_code,'.$id,
 					'branch_name' => 'required',
 					'branch_address' => 'required',
 					'area_uuid' => 'string',
