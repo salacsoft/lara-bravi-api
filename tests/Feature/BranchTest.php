@@ -9,6 +9,9 @@ use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BranchExport;
+use Illuminate\Support\Carbon;
 
 class BranchTest extends TestCase
 {
@@ -209,5 +212,18 @@ class BranchTest extends TestCase
 			])
 			->get(route('branch.get',['id' => $branch->id]))
 			->assertStatus(404);
+		}
+
+		public function testExportAsCsvFile(){
+			Excel::fake();
+
+			$user = User::factory()->create();
+			$this->actingAs($user);
+
+			$response = $this->get(route('branch.export'))
+									->assertStatus(200);
+
+			$response->dump();
+			Excel::assertDownloaded('branches 2021-11-26.xlsx');
 		}
 }
