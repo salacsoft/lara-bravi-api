@@ -34,9 +34,6 @@ class BranchController extends Controller
 				'csv' => 'branches '.Carbon::now()->format('Y-m-d').'.csv',
 				'excel' => 'branches '.Carbon::now()->format('Y-m-d').'.xlsx',
 				'pdf' => 'branches '.Carbon::now()->format('Y-m-d').'.pdf',
-				// 'csv' => 'branches.csv',
-				// 'excel' => 'branches.xlsx',
-				// 'pdf' => 'branches.pdf',
 			);
 
 			return (new BranchExport($request->selectedIds ?? []))

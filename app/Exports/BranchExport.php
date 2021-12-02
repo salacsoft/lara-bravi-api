@@ -22,10 +22,6 @@ class BranchExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
     /**
     * @return \Illuminate\Support\Collection
     */
-    // public function collection()
-    // {
-    //     return Branch::all();
-    // }
 
 		public function query(){
 			// if distinct branch is selected
