@@ -23,6 +23,7 @@ class AuthController extends Controller
         $this->auth = $auth;
     }
 
+
     public function login(LoginRequest $request)
     {
         $auth = $this->auth->authenticate($request);
@@ -46,7 +47,7 @@ class AuthController extends Controller
     {
         if ($this->auth->forgotPassword($request)) {
             return response()->json([
-                "message" => "We sent reset link to your email"
+                "message" => "Please check you email, we have sent a reset link."
             ], 200);
         }
     }
@@ -55,7 +56,7 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request)
     {
         $response = $this->auth->resetPassword($request);
-        Log::info($response);
+
         if (!$response["success"]) {
             return response()->json([
                 "message" => $response["message"]
@@ -67,6 +68,7 @@ class AuthController extends Controller
         ], 200);
 
     }
+
 
     public function logOut(Request $request)
     {

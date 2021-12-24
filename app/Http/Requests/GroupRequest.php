@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BranchRequest extends FormRequest
+class GroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,7 @@ class BranchRequest extends FormRequest
     public function rules($id = null)
     {
         return [
-                'client_uuid' => 'required',
-                'branch_code' => 'required|string|unique:branches,branch_code,'.$id,
-                'branch_name' => 'required',
-                'branch_address' => 'required',
-                'area_uuid' => 'string',
-                'region_uuid' => 'string',
-            ];
+            'group_name' => 'required|string|unique:groups,group_name,'.$id,
+        ];
     }
 }

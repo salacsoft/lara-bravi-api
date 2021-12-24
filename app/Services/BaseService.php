@@ -40,7 +40,7 @@ class BaseService
     //get the list of records with pagination
     public function getAll($request)
     {
-        $paginate = $request->paginate ?? 1000000;
+        $paginate = $request->paginate ?? 10;
         $orderBy = $request->orderBy ?? $this->model->defaultSortKey;
         $lookUp = $request->search ?? "";
         $result = $this->model

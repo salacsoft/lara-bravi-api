@@ -4,23 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use App\Services\BranchService;
-use App\Http\Requests\BranchRequest;
-use App\Http\Resources\BranchResource;
+use App\Services\GroupService;
 use Illuminate\Support\Str;
-use App\Exports\BranchExport;
+use App\Exports\GroupExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 
-class BranchController extends Controller
+class GroupController extends Controller
 {
-	use ResponseTrait;
+    use ResponseTrait;
 
-    protected $branchService;
-
-    public function __construct(BranchService $branchservice){
-        $this->modelService = $branchservice;
-        $this->modelAlias = " Branch ";
+    public function __construct(GroupService $groupservice){
+        $this->modelService = $groupservice;
+        $this->modelAlias = "Group";
     }
 
     public function exportBranches(Request $request){
@@ -31,12 +27,12 @@ class BranchController extends Controller
         );
 
         $exportFileName = array(
-            'csv' => 'branches '.Carbon::now()->format('Y-m-d').'.csv',
-            'excel' => 'branches '.Carbon::now()->format('Y-m-d').'.xlsx',
-            'pdf' => 'branches '.Carbon::now()->format('Y-m-d').'.pdf',
+            'csv' => 'groups '.Carbon::now()->format('Y-m-d').'.csv',
+            'excel' => 'groups '.Carbon::now()->format('Y-m-d').'.xlsx',
+            'pdf' => 'groups '.Carbon::now()->format('Y-m-d').'.pdf',
         );
 
-        return (new BranchExport($request->selectedIds ?? []))
+        return (new GroupExport($request->selectedIds ?? []))
             ->download(
                 $exportFileName[$request->exportType] ?? $exportFileName['excel'],
                 $exportFileTypes[$request->exportType ?? 'excel'],
