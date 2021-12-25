@@ -149,4 +149,28 @@ class BaseService
     }
 
 
+    //get the list of soft deleted records with pagination
+    public function getAllSoftDeleted($request)
+    {
+        $paginate = $request->paginate ?? 10;
+        $orderBy  = $request->orderBy ?? $this->model->defaultSortKey;
+        $lookUp   = $request->search ?? "";
+        $result   = $this->model
+                    ->onlyTrashed()
+                    ->where(function($query) use ($lookUp) {
+                        $query->whereLike($this->model->searchableColumns, $lookUp);
+                    })
+                    ->orderBy($orderBy, "asc")
+                    ->paginate($paginate);
+        return $result;
+    }
+
+
+    //find using the incremental id of the table
+    public function findSoftDelete(int $id)
+    {
+        return $this->model->onlyTrashed()->findOrFail($id);
+    }
+
+
 }

@@ -63,4 +63,73 @@ class GroupTest extends TestCase
                     ->etc()
                 );
     }
+
+
+    public function testFindGroup()
+    {
+        $this->actingAs($this->user);
+        $group = Group::factory()->create();
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+        ])
+        ->get(route('group.get', ['id' => $group['id']]))
+        ->assertStatus(200)
+        ->assertJson(fn(AssertableJson $json) =>
+            $json->where("id", $group["id"])
+            ->where("uuid", $group["uuid"])
+            ->etc()
+        );
+    }
+
+
+    public function testRemoveGroup()
+    {
+        $this->actingAs($this->user);
+        $group = Group::factory()->create();
+
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+        ])
+        ->delete(route('group.destroy', ["id" => $group->id]))
+        ->assertStatus(200)
+        ->assertJson(fn (AssertableJson $json) =>
+            $json->has("message")
+                ->where("success", true)
+                ->etc()
+        );
+
+        //CHECK IF THE GROUP WONT EXISTS ON FIND
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+        ])
+        ->get(route('group.get', ['id' => $group->id]))
+        ->assertStatus(404);
+
+        //CHECK IF THE GROUP IS SOFT DELETED
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+        ])
+        ->get(route("groups.find.soft-delete", ["id" => $group->id]))
+        ->assertStatus(200)
+        ->assertJson(fn (AssertableJson $json) =>
+            $json->has("deleted_at")
+                ->where("uuid", $group->uuid)
+                ->etc()
+        );
+    }
+
+
+    function testMissingPayload()
+    {
+        $this->actingAs($this->user);
+
+        $payload = ["group_name" => null];
+
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ])
+        ->post(route('group.store'), $payload)
+        ->assertStatus(422);
+    }
 }
