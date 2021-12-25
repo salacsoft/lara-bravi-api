@@ -19,7 +19,7 @@ class GroupController extends Controller
         $this->modelAlias = "Group";
     }
 
-    public function exportBranches(Request $request){
+    public function export(Request $request){
         $exportFileTypes = array(
             'csv' => \Maatwebsite\Excel\Excel::CSV,
             'excel' => \Maatwebsite\Excel\Excel::XLSX,

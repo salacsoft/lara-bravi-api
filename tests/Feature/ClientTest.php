@@ -168,8 +168,6 @@ class ClientTest extends TestCase
     {
         $client =  Client::factory()->create();
         $payload = array(
-            "id" => $client->id,
-            "uuid"   => "asdasd123123",
             "client_code" => $client->client_code,
             "client_name" => $client->client_name,
             "client_address" => $client->client_address,
@@ -195,15 +193,15 @@ class ClientTest extends TestCase
             'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
             'Accept' => 'application/json',
             ])
-            ->patch(route('client.update', ["id" => $payload["id"]]), $payload)
+            ->patch(route('client.update', ["id" => $client["id"]]), $payload)
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) =>
                 $json->has("data")
                     ->where("success",true)
                     ->etc()
                     ->has("data",fn (AssertableJSON $json2) =>
-                        $json2->where("id", $payload["id"])
-                        ->where("uuid", $payload["uuid"])
+                        $json2->where("id", $client["id"])
+                        ->where("uuid", $client["uuid"])
                         ->has("id")
                         ->etc()
                     )

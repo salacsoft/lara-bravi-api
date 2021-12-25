@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Branch;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -29,13 +30,13 @@ class BranchTest extends TestCase
      */
 		// BRANCH CREATE
     public function testBranchCreation(){
-			// important!:  using a faker must see a valid formatter in faker github 
+			// important!:  using a faker must see a valid formatter in faker github
 
 			// genarate a fake user to validate actions
 			$user = User::factory()->create();
 			$this->actingAs($user);
 
-			// datas 
+			// datas
 			$payload = [
 				'client_uuid' => Str::random(20),
 				'branch_code' => Str::random(10),
@@ -50,7 +51,7 @@ class BranchTest extends TestCase
 			])
 			->post(route('branch.store'), $payload)
 			->assertStatus(201)
-			->assertJson(fn (AssertableJson $json) => 
+			->assertJson(fn (AssertableJson $json) =>
 				$json->has('data')
 							->has('success')
 							->etc()
@@ -99,7 +100,7 @@ class BranchTest extends TestCase
 			])
 			->get(route('branch.list'))
 			->assertStatus(200)
-			->assertJson( fn (AssertableJson $json) => 
+			->assertJson( fn (AssertableJson $json) =>
 				$json->has('data')
 						->has('links')
 						->etc()
@@ -132,67 +133,41 @@ class BranchTest extends TestCase
 		public function testUpdateBranchRecord(){
 			// create a fake branch
 			$branch = Branch::factory()->create();
+            $client = Client::factory()->create();
 
 			$user = User::factory()->create();
 			$this->actingAs($user);
 
-
 			// dummy data to update
 			$payload = array (
-				'id' => $branch->id,
-				'uuid' => $branch->uuid,
-				'client_uuid' => $branch->client_uuid,
+				'client_uuid' => $client->uuid,
 				'branch_code' => $branch->branch_code,
-				'branch_name' => $branch->branch_name,
-				'branch_address' => $branch->branch_address,
+				'branch_name' => $this->faker->lastName . " branch",
+				'branch_address' => $this->faker->address,
 			);
 
-			// action 1 verify branch if existing on database before proceed in 
-
-			$response = $this->withHeaders([
-				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
-				'Accept' => 'application/json',
-			])
-			->get(route("branch.get", ["id" => $branch->id]))
-			->assertStatus(200)
-			->assertJson(fn (AssertableJson $json) => 
-				$json->where("id", $branch->id)
-							->where("uuid", $branch->uuid)
-							->where("client_uuid", $branch->client_uuid)
-							->has("id")
-							->etc()
-			);
-
-			// test scenario for error finding branch using id
-			$response = $this->withHeaders([
-				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
-				'Accept' => 'application/json',
-			])
-			->get(route("branch.get", ["id" => 1]))
-			->assertStatus(404);
-
-			// action2
+			// action
 			$response = $this->withHeaders([
 				'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
 				'Accept' => 'application/json',
 			])
 			// localhost:8000/api/v1/branches/{id}/data
-			->patch(route('branch.update',['id' => $payload['id']]), $payload)
+			->patch(route('branch.update',['id' => $branch['id']]), $payload)
 			->assertStatus(200)
-			->assertJson(fn (AssertableJson $json) => 
+			->assertJson(fn (AssertableJson $json) =>
 				$json->has("data")
 							->where("success",true)
 							->etc()
-							->has("data", fn(AssertableJson $json2) => 
-							$json2->where("id", $payload["id"])
-										->where("uuid", $payload["uuid"])
+							->has("data", fn(AssertableJson $json2) =>
+							$json2->where("id", $branch["id"])
+										->where("branch_name", $payload["branch_name"])
 										->has("id")
 										->etc()
 							)
 			);
 		}
 
-		// BRANCH DELETE 
+		// BRANCH DELETE
 		public function testDeleteBranchRecord(){
 			$branch = Branch::factory()->create();
 			$user = User::factory()->create();
@@ -215,15 +190,15 @@ class BranchTest extends TestCase
 		}
 
 		public function testExportAsCsvFile(){
-			Excel::fake();
 
 			$user = User::factory()->create();
 			$this->actingAs($user);
 
-			$response = $this->get(route('branch.export'))
-									->assertStatus(200);
+            Branch::factory()->count(100)->create();
 
-			$response->dump();
-			Excel::assertDownloaded('branches 2021-11-26.xlsx');
+			$response = $this->get(route('branch.export'))
+									->assertDownload();
+
+
 		}
 }

@@ -41,24 +41,17 @@ class BaseService
     public function getAll($request)
     {
         $paginate = $request->paginate ?? 10;
-        $orderBy = $request->orderBy ?? $this->model->defaultSortKey;
-        $lookUp = $request->search ?? "";
-        $result = $this->model
-                ->where(function($query) use ($lookUp) {
-                    $query->whereLike($this->model->searchableColumns, $lookUp);
-                })
-                ->orderBy($orderBy, "asc")
-                ->paginate($paginate);
+        $orderBy  = $request->orderBy ?? $this->model->defaultSortKey;
+        $lookUp   = $request->search ?? "";
+        $result   = $this->model
+                    ->where(function($query) use ($lookUp) {
+                        $query->whereLike($this->model->searchableColumns, $lookUp);
+                    })
+                    ->orderBy($orderBy, "asc")
+                    ->paginate($paginate);
         return $result;
     }
 
-
-
-    //get the fillable columns of the table
-    public function getFillable()
-    {
-        return $this->model->getFillable();
-    }
 
 
     //find using the uuid column
@@ -95,6 +88,7 @@ class BaseService
     //loop through the fillable columns and match on the payload to insert record on the table
     public function store($request, $id = null)
     {
+
         if ($id !== null) {
             $this->model = $this->find($id);
         }
@@ -106,17 +100,19 @@ class BaseService
             if ($fileColumns && in_array($column, $fileColumns)) {
                 $this->model[$column] = $this->storeFile($request, $column, $uuid);
             }else {
-                $this->model[$column] = $request[$column] ?? null;
+                $this->model[$column] = $request[$column] ?? $this->model[$column];
             }
 
         }
-        if (in_array("uuid", $columns ) and $id == null) {
+
+        if (in_array("uuid", $columns ) and $id === null) {
             $this->model["uuid"] = $uuid;
         }
 
         $this->model->save();
         return array("success" => true, "data" => $this->model);
     }
+
 
     //function to get the file attached from the payload and store on the storage folder
     public function storeFile($request, $columnName, $filename): string

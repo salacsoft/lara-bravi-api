@@ -25,7 +25,7 @@ class GroupExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
         if(count($this->ids)){
             return Group::query()->select('uuid','group_name')->where('id',$this->ids)->orderBy('group_name','asc');
         }
-        return Group::query()->select('uuid','branch_name')->orderBy('group_name','asc');
+        return Group::query()->select('uuid','group_name')->orderBy('group_name','asc');
     }
 
     public function styles(Worksheet $sheet){
