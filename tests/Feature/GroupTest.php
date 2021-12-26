@@ -132,4 +132,19 @@ class GroupTest extends TestCase
         ->post(route('group.store'), $payload)
         ->assertStatus(422);
     }
+
+
+    function testDuplicateGroup()
+    {
+        $this->actingAs($this->user);
+        $group = Group::factory()->create();
+        $payload = ["group_name" => $group->group_name];
+
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ])
+        ->post(route("group.store"), $payload)
+        ->assertStatus(422);
+    }
 }
