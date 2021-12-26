@@ -161,4 +161,16 @@ class GroupTest extends TestCase
     }
 
 
+    function testToDeleteNotExistingGroup()
+    {
+        $this->actingAs($this->user);
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json'
+        ])
+        ->delete(route("group.destroy",["id" => 0]))
+        ->assertStatus(404);
+    }
+
+
 }
