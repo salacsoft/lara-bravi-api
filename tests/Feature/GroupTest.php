@@ -147,4 +147,18 @@ class GroupTest extends TestCase
         ->post(route("group.store"), $payload)
         ->assertStatus(422);
     }
+
+
+    function testToFindNotExistingGroup()
+    {
+        $this->actingAs($this->user);
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ])
+        ->get(route("group.get",["id" => 0]))
+        ->assertStatus(404);
+    }
+
+
 }
