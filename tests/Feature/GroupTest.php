@@ -205,4 +205,37 @@ class GroupTest extends TestCase
     }
 
 
+    function testSearchGroup()
+    {
+        $group = Group::factory()->create();
+        $this->actingAs($this->user);
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json'
+        ])
+        ->get(route("group.list",["search" => $group->group_name]))
+        ->assertStatus(200)
+        ->assertJson(fn (AssertableJson $json) =>
+            $json->has("data")
+                ->has("links")
+                ->has("meta")
+                ->etc()
+        );
+    }
+
+
+    function testExportGroup()
+    {
+        $group = Group::factory()->count(100)->create();
+        $this->actingAs($this->user);
+        $response = $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json'
+        ])
+        ->get(route("group.export"))
+        ->assertDownload()
+        ->assertStatus(200);
+    }
+
+
 }
