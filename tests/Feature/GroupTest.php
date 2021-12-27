@@ -109,7 +109,7 @@ class GroupTest extends TestCase
         $this->withHeaders([
             'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
         ])
-        ->get(route("groups.find.soft-delete", ["id" => $group->id]))
+        ->get(route("group.find.soft-delete", ["id" => $group->id]))
         ->assertStatus(200)
         ->assertJson(fn (AssertableJson $json) =>
             $json->has("deleted_at")
@@ -170,6 +170,38 @@ class GroupTest extends TestCase
         ])
         ->delete(route("group.destroy",["id" => 0]))
         ->assertStatus(404);
+    }
+
+
+    function testFindSoftDeleteGroup()
+    {
+        $group = Group::factory()->create();
+        $this->actingAs($this->user);
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json'
+        ])
+        ->delete(route('group.destroy', ["id" => $group->id]))
+        ->assertStatus(200);
+
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json'
+        ])
+        ->get(route("group.get", ["id" => $group->id]))
+        ->assertStatus(404);
+
+        $this->withHeaders([
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+            'Accept' => 'application/json'
+        ])
+        ->get(route("group.find.soft-delete", ["id" => $group->id]))
+        ->assertStatus(200)
+        ->assertJson(fn (AssertableJson $json) =>
+            $json->has("deleted_at")
+                ->where("uuid", $group->uuid)
+                ->etc()
+        );
     }
 
 
