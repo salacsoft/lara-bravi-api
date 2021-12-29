@@ -26,11 +26,18 @@ class GroupController extends Controller
             'pdf' => \Maatwebsite\Excel\Excel::DOMPDF,
         );
 
+        // $exportFileName = array(
+        //     'csv' => 'groups '.Carbon::now()->format('Y-m-d').'.csv',
+        //     'excel' => 'groups '.Carbon::now()->format('Y-m-d').'.xlsx',
+        //     'pdf' => 'groups '.Carbon::now()->format('Y-m-d').'.pdf',
+        // );
+
         $exportFileName = array(
-            'csv' => 'groups '.Carbon::now()->format('Y-m-d').'.csv',
-            'excel' => 'groups '.Carbon::now()->format('Y-m-d').'.xlsx',
-            'pdf' => 'groups '.Carbon::now()->format('Y-m-d').'.pdf',
+            "excel" => "groups.xlsx",
+            "csv"   => "groups.csv",
+            "pdf"   => "groups.pdf",
         );
+
 
         return (new GroupExport($request->selectedIds ?? []))
             ->download(

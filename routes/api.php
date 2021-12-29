@@ -57,7 +57,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
     Route::get("groups/{id}", [GroupController::class, "get"])->name("group.get");
     Route::patch("groups/{id}", [GroupController::class, "update"])->name("group.update");
     Route::delete("groups/{id}", [GroupController::class, "destroy"])->name("group.destroy");
-    Route::get("groups/file/export", [GroupController::class, "export"])->name("group.export");
+    Route::post("groups/file/export", [GroupController::class, "export"])->name("group.export");
     Route::get("groups/soft-deleted/all", [GroupController::class, "allSoftDeleted"])->name("group.soft-deleted");
     Route::get("groups/soft-deleted/{id}", [GroupController::class, "findSoftDeleted"])->name("group.find.soft-delete");
 

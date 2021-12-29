@@ -15,6 +15,7 @@ class GroupResource extends JsonResource
     public function toArray($request)
     {
         return [
+            "id"            => $this->id,
             "uuid"          => $this->uuid,
             "group_name"    => $this->group_name,
             "created_at"    => date_format($this->created_at, "Y-m-d h:i:s A"),
