@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CquoinController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,15 +42,27 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
     Route::delete("clients/{id}", [ClientController::class, "destroy"])->name("client.delete");
     Route::post("clients/file/export", [ClientController::class, "exportList"])->name("client.export");
 
-		// branches
-		Route::post("branches", [BranchController::class, "store"])->name("branch.store");
-		Route::get("branches", [BranchController::class, "all"])->name("branch.list");
-		Route::get("branches/export/", [BranchController::class, "exportBranches"])->name("branch.export");
-		Route::get("branches/{id}", [BranchController::class, "get"])->name("branch.get");
-		Route::patch("branches/{id}", [BranchController::class, "update"])->name("branch.update");
-		Route::delete("branches/{id}", [BranchController::class, "destroy"])->name("branch.destroy");
-		
-	});
+    // branches
+    Route::post("branches", [BranchController::class, "store"])->name("branch.store");
+    Route::get("branches", [BranchController::class, "all"])->name("branch.list");
+    Route::get("branches/file/export", [BranchController::class, "exportBranches"])->name("branch.export");
+    Route::get("branches/{id}", [BranchController::class, "get"])->name("branch.get");
+    Route::patch("branches/{id}", [BranchController::class, "update"])->name("branch.update");
+    Route::delete("branches/{id}", [BranchController::class, "destroy"])->name("branch.destroy");
+
+
+    //GROUPS
+    Route::get("groups", [GroupController::class, "all"])->name("group.list");
+    Route::post("groups", [GroupController::class, "store"])->name("group.store");
+    Route::get("groups/{id}", [GroupController::class, "get"])->name("group.get");
+    Route::patch("groups/{id}", [GroupController::class, "update"])->name("group.update");
+    Route::delete("groups/{id}", [GroupController::class, "destroy"])->name("group.destroy");
+    Route::post("groups/file/export", [GroupController::class, "export"])->name("group.export");
+    Route::get("groups/soft-deleted/all", [GroupController::class, "allSoftDeleted"])->name("group.soft-deleted");
+    Route::get("groups/soft-deleted/{id}", [GroupController::class, "findSoftDeleted"])->name("group.find.soft-delete");
+
+
+});
 
 
 

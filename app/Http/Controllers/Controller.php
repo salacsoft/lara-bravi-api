@@ -90,8 +90,6 @@ class Controller extends BaseController
         }  catch(\Exception $ex) {
             return response()->json(["message" => $ex->getMessage()], 500);
         }
-
-
     }
 
 
@@ -142,5 +140,26 @@ class Controller extends BaseController
         }  catch(\Exception $ex) {
             return response()->json(["message" => $ex->getMessage()], 500);
         }
+    }
+
+
+    /**
+     * Display a listing of the resource.
+     * @param  \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response
+     */
+    public function allSoftDeleted(Request $request)
+    {
+        return $this->modelService->getAllSoftDeleted($request);
+    }
+
+    /**
+     * Display a listing of the resource.
+     * @param  id int
+     * @return \Illuminate\Http\Response
+     */
+    public function findSoftDeleted($id)
+    {
+        return $this->modelService->findSoftDelete($id);
     }
 }

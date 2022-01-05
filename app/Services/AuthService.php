@@ -71,25 +71,29 @@ class AuthService  extends BaseService
 
     public function forgotPassword($request)
     {
+        try {
+            $token = Str::random(30);
+            $user = $this->getBy("email", $request->email);
+            DB::table("password_resets")->where("email", $request->email)->delete();
+            DB::beginTransaction();
 
-        $token = Str::random(30);
-        $user = $this->getBy("email", $request->email);
-        DB::table("password_resets")->where("email", $request->email)->delete();
-        DB::beginTransaction();
+            DB::table("password_resets")->upsert([
+                ["email" => $request->email, "token" => $token, "valid_until" => Carbon::now()->addMinutes(60)]
+            ], ["email" => $request->email]);
 
-        DB::table("password_resets")->upsert([
-            ["email" => $request->email, "token" => $token, "valid_until" => Carbon::now()->addMinutes(60)]
-        ], ["email" => $request->email]);
-
-        $data = array(
-            "token"     => $token,
-            "url"       => $request->url . "?token=".$token."&email=".$user->email,
-            "full_name" => $user->full_name,
-            "email"     => $user->email
-        );
-        Mail::to($user)->send(new ResetPasswordMail($data));
-        DB::commit();
-
+            $data = array(
+                "token"     => $token,
+                "url"       => $request->url . "?token=".$token."&email=".$user->email,
+                "full_name" => $user->full_name,
+                "email"     => $user->email
+            );
+            Mail::to($user)->send(new ResetPasswordMail($data));
+            DB::commit();
+            return true;
+        }catch(\Exception $ex) {
+            DB::rollback();
+            return false;
+        }
     }
 
 

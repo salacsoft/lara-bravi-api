@@ -26,7 +26,7 @@ class BranchExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
 		public function query(){
 			// if distinct branch is selected
 			if(count($this->ids)){
-				return Branch::query()->select('branch_name','branch_code', 'branch_address')->where('id',$this->ids)->orderBy('branch_name','asc');
+				return Branch::query()->select('branch_name','branch_code', 'branch_address')->whereIn('id',$this->ids)->orderBy('branch_name','asc');
 			}
 			return Branch::query()->select('branch_name','branch_code','branch_address')->orderBy('branch_name','asc');
 		}

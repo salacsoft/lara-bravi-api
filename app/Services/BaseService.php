@@ -40,25 +40,18 @@ class BaseService
     //get the list of records with pagination
     public function getAll($request)
     {
-        $paginate = $request->paginate ?? 1000000;
-        $orderBy = $request->orderBy ?? $this->model->defaultSortKey;
-        $lookUp = $request->search ?? "";
-        $result = $this->model
-                ->where(function($query) use ($lookUp) {
-                    $query->whereLike($this->model->searchableColumns, $lookUp);
-                })
-                ->orderBy($orderBy, "asc")
-                ->paginate($paginate);
+        $paginate = $request->paginate ?? 10;
+        $orderBy  = $request->orderBy ?? $this->model->defaultSortKey;
+        $lookUp   = $request->search ?? "";
+        $result   = $this->model
+                    ->where(function($query) use ($lookUp) {
+                        $query->whereLike($this->model->searchableColumns, $lookUp);
+                    })
+                    ->orderBy($orderBy, "asc")
+                    ->paginate($paginate);
         return $result;
     }
 
-
-
-    //get the fillable columns of the table
-    public function getFillable()
-    {
-        return $this->model->getFillable();
-    }
 
 
     //find using the uuid column
@@ -95,6 +88,7 @@ class BaseService
     //loop through the fillable columns and match on the payload to insert record on the table
     public function store($request, $id = null)
     {
+
         if ($id !== null) {
             $this->model = $this->find($id);
         }
@@ -106,17 +100,19 @@ class BaseService
             if ($fileColumns && in_array($column, $fileColumns)) {
                 $this->model[$column] = $this->storeFile($request, $column, $uuid);
             }else {
-                $this->model[$column] = $request[$column] ?? null;
+                $this->model[$column] = $request[$column] ?? $this->model[$column];
             }
 
         }
-        if (in_array("uuid", $columns ) and $id == null) {
+
+        if (in_array("uuid", $columns ) and $id === null) {
             $this->model["uuid"] = $uuid;
         }
 
         $this->model->save();
         return array("success" => true, "data" => $this->model);
     }
+
 
     //function to get the file attached from the payload and store on the storage folder
     public function storeFile($request, $columnName, $filename): string
@@ -150,6 +146,30 @@ class BaseService
             ->whereLike($this->searchableColumns, $criteria["search"])
             ->orderBy($criteria["sortBy"] ?? $this->defaultSortKey, "asc")
             ->paginate($criteria["paginate"]);
+    }
+
+
+    //get the list of soft deleted records with pagination
+    public function getAllSoftDeleted($request)
+    {
+        $paginate = $request->paginate ?? 10;
+        $orderBy  = $request->orderBy ?? $this->model->defaultSortKey;
+        $lookUp   = $request->search ?? "";
+        $result   = $this->model
+                    ->onlyTrashed()
+                    ->where(function($query) use ($lookUp) {
+                        $query->whereLike($this->model->searchableColumns, $lookUp);
+                    })
+                    ->orderBy($orderBy, "asc")
+                    ->paginate($paginate);
+        return $result;
+    }
+
+
+    //find using the incremental id of the table
+    public function findSoftDelete(int $id)
+    {
+        return $this->model->onlyTrashed()->findOrFail($id);
     }
 
 

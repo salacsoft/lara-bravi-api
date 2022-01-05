@@ -24,12 +24,12 @@ class BranchRequest extends FormRequest
     public function rules($id = null)
     {
         return [
-					'client_uuid' => 'required',
-					'branch_code' => 'required|string|unique:branches,branch_code,'.$id,
-					'branch_name' => 'required',
-					'branch_address' => 'required',
-					'area_uuid' => 'string',
-					'region_uuid' => 'string',
-        ];
+                'client_uuid' => 'required',
+                'branch_code' => 'required|string|unique:branches,branch_code,'.$id,
+                'branch_name' => 'required',
+                'branch_address' => 'required',
+                'area_uuid' => 'string',
+                'region_uuid' => 'string',
+            ];
     }
 }
