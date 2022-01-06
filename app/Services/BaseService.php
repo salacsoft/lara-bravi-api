@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\AccountManagerResource;
 
 class BaseService
 {
@@ -14,6 +15,7 @@ class BaseService
     public $defaultSortKey = "id";
     protected $fileStoragePath = "public";
     public $requestValidator ;
+    protected $modelResource;
 
 
     public function __construct($model)
@@ -47,7 +49,15 @@ class BaseService
                     ->where(function($query) use ($lookUp) {
                         $query->whereLike($this->model->searchableColumns, $lookUp);
                     })
-                    ->orderBy($orderBy, "asc")
+                    ->where(function($query) use ($orderBy) {
+                        if (is_array($orderBy)) {
+                            foreach($orderBy as $orderField) {
+                                $query->orderBy($orderField ,"asc");
+                            }
+                        } else {
+                            $query->orderBy($orderBy, "asc");
+                        }
+                    })
                     ->paginate($paginate);
         return $result;
     }
@@ -63,7 +73,8 @@ class BaseService
     //find using the incremental id of the table
     public function find(int $id)
     {
-        return $this->model->findOrFail($id);
+        $data = $this->model->findOrFail($id);
+        return new $this->modelResource($data);
     }
 
     //find using the field and value pass to this function
@@ -95,9 +106,10 @@ class BaseService
         $uuid = Str::uuid(30);
         $columns = $this->model->getFillable();
         $fileColumns = $this->model->fileColumns;
-
+        Log::info($fileColumns);
         foreach($columns as $column) {
             if ($fileColumns && in_array($column, $fileColumns)) {
+                Log::info("upload file");
                 $this->model[$column] = $this->storeFile($request, $column, $uuid);
             }else {
                 $this->model[$column] = $request[$column] ?? $this->model[$column];

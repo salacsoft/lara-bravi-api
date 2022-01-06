@@ -28,6 +28,8 @@ class ClientService  extends BaseService
 
         //this the request validator, you can create by using php artisan make:request
         $this->requestValidator = new ClientRequest;
+
+        $this->modelResource = "App\Http\Resources\ClientResource";
     }
 
     public function getAll($request)

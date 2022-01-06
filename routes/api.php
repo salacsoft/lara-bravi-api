@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CquoinController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\API\AccountManagerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +61,16 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function(){
     Route::post("groups/file/export", [GroupController::class, "export"])->name("group.export");
     Route::get("groups/soft-deleted/all", [GroupController::class, "allSoftDeleted"])->name("group.soft-deleted");
     Route::get("groups/soft-deleted/{id}", [GroupController::class, "findSoftDeleted"])->name("group.find.soft-delete");
+
+    //Account Managers
+    Route::get("account-managers", [AccountManagerController::class, "all"])->name("account-manager.list");
+    Route::post("account-managers", [AccountManagerController::class, "store"])->name("account-manager.store");
+    Route::get("account-managers/{id}", [AccountManagerController::class, "get"])->name("account-manager.get");
+    Route::patch("account-managers/{id}", [AccountManagerController::class, "update"])->name("account-manager.update");
+    Route::delete("account-managers/{id}", [AccountManagerController::class, "destroy"])->name("account-manager.destroy");
+    Route::post("account-managers/file/export", [AccountManagerController::class, "export"])->name("account-manager.export");
+    Route::get("account-managers/soft-deleted/all", [AccountManagerController::class, "allSoftDeleted"])->name("account-manager.soft-deleted");
+    Route::get("account-managers/soft-deleted/{id}", [AccountManagerController::class, "findSoftDeleted"])->name("account-manager.find.soft-delete");
 
 
 });

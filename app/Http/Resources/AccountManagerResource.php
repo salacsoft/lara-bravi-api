@@ -16,12 +16,14 @@ class AccountManagerResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "client_uuid" => $this->client_uuid,
-            "client" => $this->client->client_name,
             "account_pin" => $this->account_pin,
+            "account_code" => $this->account_code,
             "full_name" => $this->full_name,
             "mobile_no" => $this->mobile_no,
-            "photo" => $this->photo
+            "photo" => $this->photo,
+            "created_at" => date_format($this->created_at,"Y-M-d H:i:s a"),
+            "updated_at" => date_format($this->updated_at,"Y-M-d H:i:s a"),
+            "deleted_at" => $this->deleted_at ? date_format($this->updated_at,"Y-M-d H:i:s a") : null
         ];
     }
 }

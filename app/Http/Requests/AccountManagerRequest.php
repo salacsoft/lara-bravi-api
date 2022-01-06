@@ -21,14 +21,13 @@ class AccountManagerRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules($id)
     {
         return [
-            "client_uuid" => "required|exists:clients,uuid",
             "first_name" => "required",
             "account_pin" => "required|min:4",
-            "account_code" => "required|unique:account_managers,account_code",
-            "mobile_no" => "required|unique:account_managers,mobile_no"
+            "account_code" => "required|unique:account_managers,account_code,".$id,
+            "mobile_no" => "required|unique:account_managers,mobile_no,".$id,
         ];
     }
 }

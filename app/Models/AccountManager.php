@@ -5,12 +5,19 @@ namespace App\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccountManager extends Model
 {
     use HasFactory;
 
+    protected $fillable = ["uuid", "account_pin",  "account_code", "first_name", "last_name", "middle_name", "photo", "mobile_no"];
+
+    public $fileColumns = ["photo"];
+
     protected $appends = ["full_name"];
+
+    public $defaultSortKey = [ "first_name", "last_name"];
 
     /**
      * get the account manager user account
