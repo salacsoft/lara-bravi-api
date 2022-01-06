@@ -28,7 +28,6 @@ class GroupExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
             Log::info($this->ids);
             return Group::query()->select('uuid','group_name')->whereIn('id',$this->ids)->orderBy('group_name','asc');
         }
-        Log::info("all");
         return Group::query()->select('uuid','group_name')->orderBy('group_name','asc');
     }
 

@@ -26,6 +26,9 @@ class AccountManagerService extends BaseService
 
         $this->modelResource = "App\Http\Resources\AccountManagerResource";
 
+        //location to upload
+        $this->fileStoragePath = "public/account-manager";
+
 	}
 
 	// this methods will generate new format

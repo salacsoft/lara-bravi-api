@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use URL;
 
 class AccountManagerResource extends JsonResource
 {
@@ -20,7 +21,7 @@ class AccountManagerResource extends JsonResource
             "account_code" => $this->account_code,
             "full_name" => $this->full_name,
             "mobile_no" => $this->mobile_no,
-            "photo" => $this->photo,
+            "photo" => URL::to("/") ."/".$this->photo,
             "created_at" => date_format($this->created_at,"Y-M-d H:i:s a"),
             "updated_at" => date_format($this->updated_at,"Y-M-d H:i:s a"),
             "deleted_at" => $this->deleted_at ? date_format($this->updated_at,"Y-M-d H:i:s a") : null

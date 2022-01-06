@@ -21,7 +21,7 @@ class AccountManagerRequest extends FormRequest
      *
      * @return array
      */
-    public function rules($id)
+    public function rules($id = null)
     {
         return [
             "first_name" => "required",

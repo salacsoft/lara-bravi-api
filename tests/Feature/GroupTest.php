@@ -34,11 +34,10 @@ class GroupTest extends TestCase
         ])
         ->post(route('group.store'), $payload)
         ->assertStatus(201)
-            ->assertJson(fn (AssertableJson $json) =>
-                    $json->has('data')
-                        ->has("success")
-                        ->etc()
-            );
+        ->assertJson(fn (AssertableJson $json) =>
+                $json->where('group_name', $payload["group_name"])
+                    ->etc()
+        );
     }
 
 
@@ -53,15 +52,11 @@ class GroupTest extends TestCase
             ->patch(route('group.update', ['id' => $group["id"]]), $payload)
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) =>
-                $json->has("data",fn (AssertableJSON $json2) =>
-                        $json2->where("id", $group["id"])
+                    $json->where("id", $group["id"])
                         ->where("uuid", $group["uuid"])
                         ->has("id")
                         ->etc()
-                    )
-                    ->has("success")
-                    ->etc()
-                );
+            );
     }
 
 
@@ -232,7 +227,7 @@ class GroupTest extends TestCase
             'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
             'Accept' => 'application/json'
         ])
-        ->get(route("group.export"))
+        ->post(route("group.export"))
         ->assertDownload()
         ->assertStatus(200);
     }

@@ -29,14 +29,14 @@ class AccountManagerController extends Controller
         );
 
         $exportFileName = array(
-            'csv' => 'groups '.Carbon::now()->format('Y-m-d').'.csv',
-            'excel' => 'groups '.Carbon::now()->format('Y-m-d').'.xlsx',
-            'pdf' => 'groups '.Carbon::now()->format('Y-m-d').'.pdf',
+            'csv' => 'account-managers '.Carbon::now()->format('Y-m-d').'.csv',
+            'excel' => 'account-managers '.Carbon::now()->format('Y-m-d').'.xlsx',
+            'pdf' => 'account-managers '.Carbon::now()->format('Y-m-d').'.pdf',
         );
 
 
 
-        return (new GroupExport($request->selectedIds ?? []))
+        return (new AccountManagerExport($request->selectedIds ?? []))
             ->download(
                 $exportFileName[$request->exportType] ?? $exportFileName['excel'],
                 $exportFileTypes[$request->exportType ?? 'excel'],
