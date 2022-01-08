@@ -11,8 +11,11 @@ class BaseService
     protected $tableName ;
     protected $model ;
     protected $searchableColumns = [];
-    public $defaultSortKey = "id";
     protected $fileStoragePath = "public";
+    protected $modelResource;
+    protected $imagePath = "storage";
+
+    public $defaultSortKey = "id";
     public $requestValidator ;
 
 
@@ -28,48 +31,55 @@ class BaseService
         $this->defaultSortKey = $this->model->defaultSortKey;
 
         //searchables columns should be declared on your model class, most of the time these are the fillable columns
-        $this->searchableColumns = $this->model->searchableColumns;
+        $this->searchableColumns = $this->model->getFillable();
+
     }
 
-    //return table associated with the model
-    public function getTable()
-    {
-        return $tableName;
-    }
+
+
 
     //get the list of records with pagination
     public function getAll($request)
     {
         $paginate = $request->paginate ?? 10;
-        $orderBy  = $request->orderBy ?? $this->model->defaultSortKey;
+        $orderBy  = $request->orderBy ?? $this->defaultSortKey;
         $lookUp   = $request->search ?? "";
         $result   = $this->model
                     ->where(function($query) use ($lookUp) {
-                        $query->whereLike($this->model->searchableColumns, $lookUp);
-                    })
-                    ->orderBy($orderBy, "asc")
-                    ->paginate($paginate);
-        return $result;
+                        $query->whereLike($this->searchableColumns, $lookUp);
+                    });
+
+            if (is_array($orderBy)) {
+                foreach($orderBy as $orderField) {
+                    $result->orderBy($orderField ,"asc");
+                }
+            } else {
+                $result->orderBy($orderBy, "asc");
+            }
+
+            return $result->paginate($paginate);
+
     }
-
-
 
     //find using the uuid column
     public function findUuid(string $uuid)
     {
-        return $this->model->where("uuid", $uuid)->first();
+        $data = $this->model->where("uuid", $uuid)->first();
+        return new $this->modelResource($data);
     }
 
     //find using the incremental id of the table
     public function find(int $id)
     {
-        return $this->model->findOrFail($id);
+        $data = $this->model->findOrFail($id);
+        return new $this->modelResource($data);
     }
 
     //find using the field and value pass to this function
     public function getBy($column, $value)
     {
-        return $this->model->where($column, $value)->first();
+        $data = $this->model->where($column, $value)->first();
+        return new $this->modelResource($data);
     }
 
 
@@ -95,10 +105,12 @@ class BaseService
         $uuid = Str::uuid(30);
         $columns = $this->model->getFillable();
         $fileColumns = $this->model->fileColumns;
-
         foreach($columns as $column) {
             if ($fileColumns && in_array($column, $fileColumns)) {
-                $this->model[$column] = $this->storeFile($request, $column, $uuid);
+                if ($request->has($column)) {
+                    $this->model[$column] = $this->storeFile($request, $column, $uuid);
+                }
+
             }else {
                 $this->model[$column] = $request[$column] ?? $this->model[$column];
             }
@@ -110,7 +122,8 @@ class BaseService
         }
 
         $this->model->save();
-        return array("success" => true, "data" => $this->model);
+
+        return new $this->modelResource($this->model);
     }
 
 
@@ -120,7 +133,8 @@ class BaseService
         if ($request->hasFile($columnName)) {
             $file = $request->file($columnName);
             $name = $filename.$request->file($columnName)->getClientOriginalExtension();
-            return $request->file($columnName)->store($this->fileStoragePath);
+            $path = $request->file($columnName)->store($this->fileStoragePath);
+            return str_replace("public","storage", $path);
         }
 
         return null;

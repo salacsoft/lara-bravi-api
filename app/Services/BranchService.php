@@ -25,6 +25,8 @@ class BranchService extends BaseService {
 		//instantiate a variable to call in base controller $this->modelService->requestValidator then call the methods of request class
 		$this->requestValidator = new BranchRequest;
 
+        $this->modelResource = "App\Http\Resources\BranchResource";
+
 	}
 
 	// this methods will generate new format

@@ -46,16 +46,16 @@ class BranchTest extends TestCase
 			];
 
 			// actions
-			$this->withHeaders([
+			$response = $this->withHeaders([
 				'HTTP_X_REQUEST_WITH' => 'XMLHttpRequest'
 			])
 			->post(route('branch.store'), $payload)
 			->assertStatus(201)
 			->assertJson(fn (AssertableJson $json) =>
-				$json->has('data')
-							->has('success')
+				$json->where('branch_code', $payload["branch_code"])
 							->etc()
 			);
+
 
     }
 
@@ -155,15 +155,10 @@ class BranchTest extends TestCase
 			->patch(route('branch.update',['id' => $branch['id']]), $payload)
 			->assertStatus(200)
 			->assertJson(fn (AssertableJson $json) =>
-				$json->has("data")
-							->where("success",true)
-							->etc()
-							->has("data", fn(AssertableJson $json2) =>
-							$json2->where("id", $branch["id"])
-										->where("branch_name", $payload["branch_name"])
-										->has("id")
-										->etc()
-							)
+				$json->where("id", $branch["id"])
+                    ->where("branch_name", $payload["branch_name"])
+                    ->has("id")
+                    ->etc()
 			);
 		}
 

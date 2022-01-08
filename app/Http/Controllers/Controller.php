@@ -61,11 +61,9 @@ class Controller extends BaseController
         DB::beginTransaction();
         try {
             $record = $this->modelService->store($request);
-            if ($record["success"] == true) {
-                $response = response()->json($record, 201);
-                DB::commit();
-                return $response;
-            }
+            $response = response()->json($record, 201);
+            DB::commit();
+            return $response;
         } catch(\Exception $ex) {
             Log::info($ex);
             DB::rollback();
@@ -106,12 +104,9 @@ class Controller extends BaseController
         DB::beginTransaction();
         try {
             $record = $this->modelService->store($request, $id);
-            if ($record["success"] == true) {
-                $response = response()->json($record, 200);
-                DB::commit();
-                return $response;
-            }
-
+            $response = response()->json($record, 200);
+            DB::commit();
+            return $response;
         } catch(\Exception $ex) {
             Log::info($ex);
             DB::rollback();

@@ -25,6 +25,8 @@ class GroupService extends BaseService {
 		//instantiate a variable to call in base controller $this->modelService->requestValidator then call the methods of request class
 		$this->requestValidator = new GroupRequest;
 
+        $this->modelResource = "App\Http\Resources\GroupResource";
+
 	}
 
 	// this methods will generate new format

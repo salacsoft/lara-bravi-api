@@ -15,6 +15,7 @@ class BranchResource extends JsonResource
     public function toArray($request)
     {
         return [
+                'id'   => $this->id,
                 'uuid' => $this->uuid,
                 'branch_code' => $this->branch_code,
                 'branch_name' => $this->branch_name,

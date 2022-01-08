@@ -43,8 +43,8 @@ class ClientTest extends TestCase
             ->post(route('client.store'), $payload)
             ->assertStatus(201)
             ->assertJson(fn (AssertableJson $json) =>
-                    $json->has('data')
-                        ->has("success")
+                    $json->where('client_code', $payload["client_code"])
+                        ->where("client_name", $payload["client_name"])
                         ->etc()
             );
     }
@@ -196,16 +196,11 @@ class ClientTest extends TestCase
             ->patch(route('client.update', ["id" => $client["id"]]), $payload)
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) =>
-                $json->has("data")
-                    ->where("success",true)
-                    ->etc()
-                    ->has("data",fn (AssertableJSON $json2) =>
-                        $json2->where("id", $client["id"])
+                    $json->where("id", $client["id"])
                         ->where("uuid", $client["uuid"])
                         ->has("id")
                         ->etc()
-                    )
-            );
+        );
     }
 
     /**

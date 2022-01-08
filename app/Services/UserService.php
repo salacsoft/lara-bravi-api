@@ -21,6 +21,8 @@ class UserService  extends BaseService
         $this->searchableColumns = $this->model->searchableColumns;
         $this->defaultSortKey = $this->model->defaultSortKey ?? "username";
         $this->requestValidator = new UserRequest;
+
+        $this->modelResource = "App\Http\Resources\UserResource";
     }
 
 
