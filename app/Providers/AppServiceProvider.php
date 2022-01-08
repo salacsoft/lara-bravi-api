@@ -32,13 +32,19 @@ class AppServiceProvider extends ServiceProvider
                         str_contains($attribute, '.'),
                         function (Builder $query) use ($attribute, $searchTerm) {
                             [$relationName, $relationAttribute] = explode('.', $attribute);
-
                             $query->orWhereHas($relationName, function (Builder $query) use ($relationAttribute, $searchTerm) {
-                                $query->where($relationAttribute, 'LIKE', "%{$searchTerm}%");
+                                $criteria = explode(" ", $searchTerm);
+                                foreach ($criteria as $lookFor)  {
+                                    $query->orWhere($relationAttribute, 'LIKE', "%{$lookFor}%");
+                                }
+
                             });
                         },
                         function (Builder $query) use ($attribute, $searchTerm) {
-                            $query->orWhere($attribute, 'LIKE', "%{$searchTerm}%");
+                            $criteria = explode(" ", $searchTerm);
+                                foreach ($criteria as $lookFor)  {
+                                    $query->orWhere($attribute, 'LIKE', "%{$lookFor}%");
+                                }
                         }
                     );
                 }

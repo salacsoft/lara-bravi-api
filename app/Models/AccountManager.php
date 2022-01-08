@@ -17,8 +17,6 @@ class AccountManager extends Model
 
     protected $appends = ["full_name"];
 
-    public $defaultSortKey = [ "first_name", "last_name"];
-
     /**
      * get the account manager user account
      */
@@ -30,6 +28,6 @@ class AccountManager extends Model
 
     public function getFullNameAttribute()
     {
-        return "{$this->first_name} {$this->last_name}";
+        return "{$this->first_name} {$this->middle_name}, {$this->last_name}";
     }
 }

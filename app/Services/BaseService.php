@@ -11,11 +11,12 @@ class BaseService
     protected $tableName ;
     protected $model ;
     protected $searchableColumns = [];
-    public $defaultSortKey = "id";
     protected $fileStoragePath = "public";
-    public $requestValidator ;
     protected $modelResource;
     protected $imagePath = "storage";
+
+    public $defaultSortKey = "id";
+    public $requestValidator ;
 
 
     public function __construct($model)
@@ -41,26 +42,24 @@ class BaseService
     public function getAll($request)
     {
         $paginate = $request->paginate ?? 10;
-        $orderBy  = $request->orderBy ?? $this->model->defaultSortKey;
+        $orderBy  = $request->orderBy ?? $this->defaultSortKey;
         $lookUp   = $request->search ?? "";
         $result   = $this->model
                     ->where(function($query) use ($lookUp) {
                         $query->whereLike($this->searchableColumns, $lookUp);
-                    })
-                    ->where(function($query) use ($orderBy) {
-                        if (is_array($orderBy)) {
-                            foreach($orderBy as $orderField) {
-                                $query->orderBy($orderField ,"asc");
-                            }
-                        } else {
-                            $query->orderBy($orderBy, "asc");
-                        }
-                    })
-                    ->paginate($paginate);
-        return $result;
+                    });
+
+            if (is_array($orderBy)) {
+                foreach($orderBy as $orderField) {
+                    $result->orderBy($orderField ,"asc");
+                }
+            } else {
+                $result->orderBy($orderBy, "asc");
+            }
+
+            return $result->paginate($paginate);
+
     }
-
-
 
     //find using the uuid column
     public function findUuid(string $uuid)
@@ -108,7 +107,10 @@ class BaseService
         $fileColumns = $this->model->fileColumns;
         foreach($columns as $column) {
             if ($fileColumns && in_array($column, $fileColumns)) {
-                $this->model[$column] = $this->storeFile($request, $column, $uuid);
+                if ($request->has($column)) {
+                    $this->model[$column] = $this->storeFile($request, $column, $uuid);
+                }
+
             }else {
                 $this->model[$column] = $request[$column] ?? $this->model[$column];
             }
