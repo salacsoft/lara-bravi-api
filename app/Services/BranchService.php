@@ -18,9 +18,9 @@ class BranchService extends BaseService {
 		parent::__construct($model);
 		$this->branch = $model;
 		//		variable to hold array ->  this columns is declared on model
-		$this->searchableColumns = $this->model->searchableColumns;
+		$this->searchableColumns = ["uuid", "branch_code", "branch_name", "branch_address", "client.client_name", "client.uuid"];
 		// if nothing declare on model it will get error
-		$this->defaultSortKey = $this->model->defaultSortKey ?? "branch_name" ;
+		$this->defaultSortKey = ["branch_name"] ;
 
 		//instantiate a variable to call in base controller $this->modelService->requestValidator then call the methods of request class
 		$this->requestValidator = new BranchRequest;
@@ -29,9 +29,4 @@ class BranchService extends BaseService {
 
 	}
 
-	// this methods will generate new format
-	public function getAll($request) {
-		$data = Parent::getAll($request);
-		return BranchResource::collection($data);
-	}
 }

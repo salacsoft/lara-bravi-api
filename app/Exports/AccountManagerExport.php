@@ -25,10 +25,11 @@ class AccountManagerExport implements FromQuery,WithHeadings,ShouldAutoSize,With
 
     public function query(){
         // if distinct branch is selected
+        $query  = AccountManager::query()->select($this->columns);
         if(count($this->ids)){
-            return AccountManager::query()->select($this->columns)->whereIn('id',$this->ids)->orderBy('first_name','asc');
+            $query->whereIn('id',$this->ids);
         }
-        return AccountManager::query()->select($this->columns)->orderBy('first_name','asc');
+        return $query->orderBy('first_name','asc');
     }
 
     public function styles(Worksheet $sheet){

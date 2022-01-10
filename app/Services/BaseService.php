@@ -28,7 +28,7 @@ class BaseService
         $this->tableName = $this->model->getTable();
 
         //defaultSortkey will be the order by to be use
-        $this->defaultSortKey = $this->model->defaultSortKey;
+        $this->defaultSortKey = "id";
 
         //searchables columns should be declared on your model class, most of the time these are the fillable columns
         $this->searchableColumns = $this->model->getFillable();
@@ -45,19 +45,18 @@ class BaseService
         $orderBy  = $request->orderBy ?? $this->defaultSortKey;
         $lookUp   = $request->search ?? "";
         $result   = $this->model
-                    ->where(function($query) use ($lookUp) {
+                    ->when($request->has("search"), function ($query) use ($lookUp) {
                         $query->whereLike($this->searchableColumns, $lookUp);
-                    });
-
-            if (is_array($orderBy)) {
-                foreach($orderBy as $orderField) {
-                    $result->orderBy($orderField ,"asc");
-                }
-            } else {
-                $result->orderBy($orderBy, "asc");
-            }
-
-            return $result->paginate($paginate);
+                    })
+                    ->when(is_array($orderBy), function ($query) use ($orderBy) {
+                            foreach($orderBy as $orderField) {
+                                $query->orderBy($orderField ,"asc");
+                            }
+                        }, function ($query) use ($orderBy) {
+                            $query->orderBy($orderBy, "asc");
+                        })
+                    ->paginate($paginate);
+        return $this->modelResource::collection($result);
 
     }
 
@@ -128,7 +127,7 @@ class BaseService
 
 
     //function to get the file attached from the payload and store on the storage folder
-    public function storeFile($request, $columnName, $filename): string
+    public function storeFile($request, $columnName, $filename)
     {
         if ($request->hasFile($columnName)) {
             $file = $request->file($columnName);

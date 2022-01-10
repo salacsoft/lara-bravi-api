@@ -15,7 +15,9 @@ class GroupExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
 {
 
     use Exportable;
+
 	protected $ids = [];
+    protected $columns = ['uuid','group_name'];
 
 	public function __construct(array $ids){
 		$this->ids = $ids;
@@ -23,12 +25,11 @@ class GroupExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
 
     public function query(){
         // if distinct branch is selected
+        $query = Group::query()->select($this->columns);
         if(count($this->ids)){
-            Log::info("selected ids");
-            Log::info($this->ids);
-            return Group::query()->select('uuid','group_name')->whereIn('id',$this->ids)->orderBy('group_name','asc');
+            $query->whereIn('id',$this->ids);
         }
-        return Group::query()->select('uuid','group_name')->orderBy('group_name','asc');
+        return $query->orderBy('group_name','asc');
     }
 
     public function styles(Worksheet $sheet){

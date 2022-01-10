@@ -15,6 +15,7 @@ class BranchExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
 
 	use Exportable;
 	protected $ids = [];
+    protected $columns = ['branches.uuid','branch_name','branch_code', 'branch_address', 'client_uuid', 'clients.client_name'];
 
 	public function __construct(array $ids){
 		$this->ids = $ids;
@@ -25,10 +26,11 @@ class BranchExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
 
 		public function query(){
 			// if distinct branch is selected
+            $query = Branch::query()->select($this->columns)->join("clients", "clients.uuid", "branches.client_uuid");
 			if(count($this->ids)){
-				return Branch::query()->select('branch_name','branch_code', 'branch_address')->whereIn('id',$this->ids)->orderBy('branch_name','asc');
+				$query->whereIn('branches.id',$this->ids);
 			}
-			return Branch::query()->select('branch_name','branch_code','branch_address')->orderBy('branch_name','asc');
+			return $query->orderBy('branch_name','asc');
 		}
 
 		public function styles(Worksheet $sheet){
@@ -39,9 +41,12 @@ class BranchExport implements FromQuery,WithHeadings,ShouldAutoSize,WithStyles
 
 		public function headings() : array {
 			return [
+                'UUID',
 				'Branch Name',
 				'Branch Code',
 				'Branch Address',
+                'Client UUID',
+                'Client Name'
 			];
 		}
 }

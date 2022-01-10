@@ -22,7 +22,10 @@ class CquoinResource extends JsonResource
             "full_name"     => ucfirst($this->first_name) . " " . ucfirst($this->last_name),
             "email"         => $this->user->email,
             "user_uuid"     => $this->user->uuid,
-            "user_id"       => $this->user->id
+            "user_id"       => $this->user->id,
+            "created_at"    => date_format($this->created_at, "Y-m-d h:i:s A"),
+            "updated_at"    => date_format($this->updated_at, "Y-m-d h:i:s A"),
+            "deleted_at"    => $this->deleted_at ? date_format($this->deleted_at, "Y-m-d h:i:s A") : null,
         ];
     }
 }

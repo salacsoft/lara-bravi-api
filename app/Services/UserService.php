@@ -26,13 +26,6 @@ class UserService  extends BaseService
     }
 
 
-    // public function create($payload)
-    // {
-    //     $data = $payload->only($this->user->getFillable());
-    //     $data["uuid"] = Str::random(30);
-    //     return $user =$this->user->create($data);
-    // }
-
     public function findByEmail(string $email)
     {
         return $this->user->where("email", $email)->first();

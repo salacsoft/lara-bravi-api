@@ -20,7 +20,9 @@ class Branch extends Model
 			'region_uuid',
 		];
 
-		public $searchableColumns = ["uuid", "branch_code", "branch_name", "branch_address"];
 
-		public $defaultSortKey = "branch_name";
+        public function client()
+        {
+            return $this->belongsTo(Client::class, "client_uuid", "uuid");
+        }
 }

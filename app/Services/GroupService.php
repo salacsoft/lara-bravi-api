@@ -29,9 +29,4 @@ class GroupService extends BaseService {
 
 	}
 
-	// this methods will generate new format
-	public function getAll($request) {
-		$data = Parent::getAll($request);
-		return GroupResource::collection($data);
-	}
 }
