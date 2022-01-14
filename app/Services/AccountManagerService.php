@@ -31,9 +31,4 @@ class AccountManagerService extends BaseService
 
 	}
 
-	// this methods will generate new format
-	public function getAll($request) {
-		$data = Parent::getAll($request);
-		return AccountManagerResource::collection($data);
-	}
 }

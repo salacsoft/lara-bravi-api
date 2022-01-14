@@ -24,7 +24,7 @@ class AccountManagerResource extends JsonResource
             "middle_name" => $this->middle_name,
             "full_name" => $this->full_name,
             "mobile_no" => $this->mobile_no,
-            "photo" => URL::to("/") ."/".$this->photo,
+            "photo" => $this->photo ? URL::to("/") ."/".$this->photo: null,
             "created_at" => date_format($this->created_at,"Y-M-d H:i:s a"),
             "updated_at" => date_format($this->updated_at,"Y-M-d H:i:s a"),
             "deleted_at" => $this->deleted_at ? date_format($this->updated_at,"Y-M-d H:i:s a") : null

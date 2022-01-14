@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Branch;
+use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -22,12 +23,13 @@ class BranchFactory extends Factory
      */
     public function definition()
     {
+        $client = Client::factory()->create();
         return [
             'uuid' => Str::random(20),
-            'client_uuid' => Str::random(20),
-						'branch_code' => Str::random(10),
-						'branch_name' => $this->faker->streetName,
-						'branch_address' => $this->faker->address,
+            'client_uuid' => $client->uuid,
+            'branch_code' => Str::random(10),
+            'branch_name' => $this->faker->streetName . " branch",
+            'branch_address' => $this->faker->address,
         ];
     }
 }

@@ -17,9 +17,11 @@ use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 class ClientExport  extends DefaultValueBinder implements FromQuery, ShouldAutoSize, WithHeadings, WithCustomValueBinder
 {
 
-    protected $ids = [];
-
     use Exportable;
+
+    protected $ids = [];
+    protected $columns = ["client_code", "client_name", "client_address"];
+
 
     public function __construct(array $ids)
     {
@@ -28,10 +30,11 @@ class ClientExport  extends DefaultValueBinder implements FromQuery, ShouldAutoS
 
     public function query()
     {
+        $query = Client::query()->select($this->columns);
         if ($this->ids) {
-            return Client::query()->select("client_code", "client_name", "client_address")->whereIn("id", $this->ids)->orderBy("client_name", "asc");
+            $query->whereIn("id", $this->ids);
         }
-        return Client::query()->select("client_code", "client_name", "client_address")->orderBy("client_name", "asc");
+        return $query->orderBy("client_name", "asc");
 
     }
 

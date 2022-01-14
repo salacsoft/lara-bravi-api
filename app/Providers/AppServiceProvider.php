@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,9 +36,8 @@ class AppServiceProvider extends ServiceProvider
                             $query->orWhereHas($relationName, function (Builder $query) use ($relationAttribute, $searchTerm) {
                                 $criteria = explode(" ", $searchTerm);
                                 foreach ($criteria as $lookFor)  {
-                                    $query->orWhere($relationAttribute, 'LIKE', "%{$lookFor}%");
+                                    $query->Where($relationAttribute, 'LIKE', "%{$lookFor}%");
                                 }
-
                             });
                         },
                         function (Builder $query) use ($attribute, $searchTerm) {
