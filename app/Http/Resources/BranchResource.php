@@ -18,6 +18,7 @@ class BranchResource extends JsonResource
                 'id'   => $this->id,
                 'uuid' => $this->uuid,
                 'client_uuid' => $this->client_uuid,
+                'client_code' => $this->client->client_code,
                 'client_name' => $this->client->client_name,
                 'branch_code' => $this->branch_code,
                 'branch_name' => $this->branch_name,
